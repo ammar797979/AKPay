@@ -15,7 +15,7 @@ CREATE TABLE Users(
     dateCreated DATETIME NOT NULL DEFAULT GETDATE(),
     PRIMARY KEY (userID),
     CONSTRAINT CK_Users_email_LUMS
-        CHECK (email LIKE '%lums.edu.pk' AND email NOT LIKE '% %'),
+        CHECK (email LIKE '%@lums.edu.pk' AND email NOT LIKE '% %'),
     CONSTRAINT CK_Users_phone_Formatting
         CHECK (LEN(phone) = 11 AND phone LIKE '3%' AND phone NOT LIKE '%[^0-9]%')
 );
