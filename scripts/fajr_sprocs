@@ -1,0 +1,369 @@
+-- User Validation
+IF OBJECT_ID('dbo.ValidateUser', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.ValidateUser;
+GO
+
+CREATE PROCEDURE dbo.ValidateUser
+    @UserID INT
+AS
+BEGIN  
+    IF NOT EXISTS(SELECT 1 FROM dbo.Users WHERE userID = @UserID)
+    THROW 50005, 'Unvalid user.', 1;
+END
+GO
+
+-- Validate vendor
+IF OBJECT_ID('dbo.ValidateVendor', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.ValidateVendor;
+GO
+
+CREATE PROCEDURE dbo.ValidateVendor
+    @VendorID INT
+AS
+BEGIN  
+    IF NOT EXISTS(SELECT 1 FROM dbo.Vendors WHERE vendorID = @VendorID)
+    THROW 50006, 'Unvalid vendor.', 1;
+END
+GO
+
+-- Validate Source
+IF OBJECT_ID('dbo.ValidateTopUpSource', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.ValidateTopUpSource;
+GO
+
+CREATE PROCEDURE dbo.ValidateTopUpSource
+    @SourceID INT
+AS
+BEGIN  
+    IF NOT EXISTS(SELECT 1 FROM dbo.TopUpSources WHERE sourceID = @SourceID)
+    THROW 50007, 'Unvalid topup source.', 1;
+END
+GO
+
+--1. TopUp TX
+IF OBJECT_ID('dbo.TopUp_tx', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.TopUp_tx;
+GO
+
+CREATE PROCEDURE dbo.TopUp_tx
+    @SourceID INT,
+    @ToUserID INT,
+    @Amount DECIMAL (20,2)
+AS
+BEGIN
+    SET XACT_ABORT ON;
+
+    EXEC db.ValidateTopUpSource @SourceID;
+    EXEC db.ValidUser @ToUserID;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        SELECT userBalance
+        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+        WHERE userID = @ToUserID;
+
+        UPDATE dbo.UserAccounts
+        SET userBalance = userBalance + @Amount,
+            lastUpdateTime = GETDATE()
+        WHERE userID = @ToUserID
+
+
+        INSERT INTO dbo.TopUpTransactions (sourceID, toUserID, amount, txTimeStamp)
+        VALUES (@SourceID, @ToUserID, @Amount, GETDATE());
+
+        COMMIT TRAN;
+        RETURN 0;
+    END TRY
+
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRAN;
+        THROW
+    END CATCH
+END
+GO
+
+--2. U2U Transfer
+IF OBJECT_ID('dbo.U2U_tx', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.U2U_tx;
+GO
+
+CREATE PROCEDURE dbo.U2U_tx
+    @FromUserID INT,
+    @ToUserID INT,
+    @Amount DECIMAL (20,2)
+
+AS 
+BEGIN
+    SET XACT_ABORT ON;
+
+    IF @FromUserID = @ToUserID
+        THROW 50001, 'Sender and receiver cannot be the same.', 1;
+
+    EXEC dbo.ValidateUser @FromUserID;
+    EXEC dbo.ValidateUser @ToUserID;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        IF @FromUserID < @ToUserID
+        BEGIN
+        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @FromUserID;
+        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @ToUserID;
+        END
+        ELSE
+        BEGIN
+        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @ToUserID;
+        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @FromUserID;
+        END
+
+        DECLARE @FromBalance DECIMAL (20,2);
+        SELECT @FromBalance = userBalance FROM dbo.UserAccounts WHERE userID = @FromUserID;
+
+        IF @FromBalance < @Amount
+        BEGIN
+            ROLLBACK TRAN;
+        THROW 50002, 'Insufficient balance.', 1;
+        END
+
+        UPDATE dbo.UserAccounts
+        SET userBalance = userBalance - @Amount,
+            lastUpdateTime = GETDATE()
+        WHERE userID = @ToUserID;
+
+        INSERT INTO U2UTransactions(toUserID, fromUserID, amount, txTimeStamp)
+        VALUES (@ToUserID, @FromUserID, @Amount, GETDATE());
+
+        COMMIT TRAN;
+        RETURN 0;
+    END TRY
+
+    BEGIN CATCH
+    IF @@TRANCOUNT > 0
+            ROLLBACK TRAN;
+        THROW
+    END CATCH
+END
+GO
+
+--3. Regular_tx
+IF OBJECT_ID('dbo.Regular_tx', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.Regular_tx;
+GO
+
+CREATE PROCEDURE dbo.Regular_tx
+    @UserID INT,
+    @VendorID INT,
+    @Amount DECIMAL(18,2)
+AS
+BEGIN
+    SET XOACT_ABORT ON;
+
+    EXEC dbo.ValidateUser @UserID;
+    EXEC dbo.ValidateVendor @VendorID;
+
+BEGIN TRY
+    BEGIN TRAN;
+
+    IF @UserID < @VendorID
+    BEGIN
+    SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @UserID;
+    SELECT vendorBalance FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE vendorID = @VendorID;
+    END
+    ELSE
+    BEGIN
+    SELECT userBalance FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE vendorID = @VendorID;
+    SELECT vendorBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @UserID;
+    END
+
+    DECLARE @UserBal DECIMAL (20,2);
+    SELECT @UserBal = userBalance FROM dbo.UserAccounts WHERE userID = @UserID;
+
+    IF @UserBal < @Amount
+        BEGIN
+            ROLLBACK TRAN;
+            THROW 50003, 'Insufficient balance.', 1;
+        END
+
+    UPDATE dbo.UserAccounts
+    SET userBalance = userBalance - @Amount,
+        lastUpdateTime = GETDATE()
+    WHERE userID = @UserID;
+
+    UPDATE dbo.Vendors
+    SET VendorBalance = VendorBalance + @Amount,
+        lastUpdateTime = GETDATE()
+    WHERE vendorID = @VendorID;
+
+    INSERT INTO dbo.RegularTransactions (fromUserID, toVendorID, amount, txTimeStamp, paymentMode)
+    VALUES (@UserID, @VendorID, @Amount, GETDATE(), @PaymentMode);
+
+    COMMIT TRAN;
+        RETURN 0;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRAN;
+        THROW;
+    END CATCH
+END
+GO
+
+--4. VendorPay
+IF OBJECT_ID('dbo.VendorPay_tx', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.VendorPay_tx;
+GO
+
+CREATE PROCEDURE dbo.VendorPay_tx
+    @SourceID INT,
+    @VendorID INT,
+    @Amount DECIMAL (20,2)
+AS
+BEGIN
+    SET XACT_ABORT ON;
+
+    EXEC dbo.ValidateTopUpSource @SourceID;
+
+    IF @SourceID <> 1
+        THROW 50004, 'Only Admin can VendorPay.', 1;
+
+    EXEC dbo.ValidateVendor @VendorID;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        SELECT vendorBalance
+        FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+        WHERE vendorID = @VendorID;
+
+        UPDATE dbo.Vendors
+        SET vendorBalance = vendorBalance + @Amount,
+            lastUpdateTime = GETDATE()
+        WHERE vendorID = @VendorID;
+
+        INSERT INTO dbo.VendorPaymentTransaction (toVendorID, amount, txTimeStamp)
+        VALUES(@VendorID, @Amount, GETDATE());
+
+        COMMIT TRAN;
+        RETURN 0;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+        ROLLBACK TRAN;
+        THROW;
+    END CATCH
+END
+GO
+
+-- TX Handling
+IF OBJECT_ID('dbo.TX_Handling', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.TX_Handling;
+GO
+
+CREATE PROCEDURE dbo.TX_Handling
+    @FromID INT = NULL,
+    @ToID INT = NULL,
+    @Amount DECIMAL (20,2),
+    @TransactionType NVARCHAR(50),
+    @ExtraSourceID INT = NULL,
+    @PaymentMode NVARCHAR(10) = NULL
+AS
+BEGIN
+    SET XACT_ABORT ON;
+
+    IF @TransactionType = 'TopUp'
+    BEGIN
+        EXEC dbo.TopUp_tx
+            @ToUserID = @ToID,
+            @Amount = @Amount,
+            @SourceID = @ExtraSourceID;
+        RETURN 0;
+    END
+    ELSE IF @TransactionType = 'U2U'
+    BEGIN
+        EXEC dbo.U2U_tx
+            @FromUserID = @FromID,
+            @ToUserID = @ToID,
+            @Amount = @Amount;
+        RETURN 0;
+    END
+    ELSE IF @TransactionType = 'Regular'
+    BEGIN
+        EXEC dbo.Regular_tx
+            @FromUserID = @FromID,
+            @VendorID = @ToID,
+            @Amount = @Amount;
+        RETURN 0;
+    END
+    ELSE IF @TransactionType = 'VendorPay'
+    BEGIN
+        EXEC dbo.VendorPay_tx
+            @SourceID = @FromID,
+            @VendorID = @ToID,
+            @Amount = @Amount;
+        RETURN 0;
+    END
+    ELSE
+        THROW 50000, 'Invalid transaction.', 1;
+END
+GO
+
+-- TX History
+CREATE PROCEDURE GetTransactionHistory
+    @UserID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    --U2U
+    SELECT
+    'U2U' as txType,
+    fromUserID AS senderID,
+    su.fullName AS senderName,
+    toUserID AS receiverID,
+    ru.fullName AS receiverName,
+    amount,
+    txTimeStamp,
+    CASE WHEN FromUserID = UserID THEN '-' ELSE '+' END AS sign
+    From U2UTransactions t
+    JOIN Users su ON t.fromUserID = su.userID
+    JOIN Users ru ON t.toUserID = ru.userID
+    WHERE fromUserID = @UserID OR toUserID = @UserID
+
+    UNION ALL
+
+    -- Regular
+    SELECT
+        'Regular' as txType,
+        fromUserID AS senderID,
+        u.fullName AS senderName,
+        toVendorID AS receiverID,
+        v.vendorName AS receiverName,
+        amount,
+        txTimeStamp,
+        '-' AS sign
+    FROM RegularTransactions t
+    JOIN Users u ON t.fromUserID = u.userID
+    JOIN Vendors v ON t.toVendorID = v.vendorID
+    WHERE fromUserID = @UserID
+
+    UNION ALL
+
+    SELECT
+        'TopUp' AS txType,
+        NULL AS senderID,
+        s.SourceName AS senderName,
+        toUserID AS receiverID,
+        u.fullName AS receiverName,
+        amount,
+        txTimeStamp,
+        '+' AS sign
+    FROM TopUpTransactions t
+    JOIN Users u ON t.toUserID = u.userID
+    JOIN TopUpSources s ON t.sourceID = s.sourceID
+    WHERE toUserID = @UserID
+
+    ORDER BY txTimeStamp DESC;
+END
+GO
