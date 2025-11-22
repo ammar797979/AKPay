@@ -1,0 +1,17 @@
+*.config
+appsettings.json
+appsettings.*.json
+
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+*.bak
+*.bacpac
+
+.DB_Store
+Thumbs.db
+
+testing.sql
