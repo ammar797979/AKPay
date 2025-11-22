@@ -1,7 +1,20 @@
 -- GPT suggested keeping this on so script stops on error
 SET XACT_ABORT ON;
 
+USE master;
+GO
+
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'AKPayDB')
+BEGIN
+    ALTER DATABASE AKPayDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE AKPayDB;
+END
+GO
+
 Create DATABASE AKPayDB;
+GO
+
+USE AKPayDB;
 GO
 
 -- Create Tables
