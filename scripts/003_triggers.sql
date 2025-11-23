@@ -1,3 +1,6 @@
+USE AKPayDB;
+GO
+
 -- lastUpdateTime of a USER balance cannot be set to BEFORE the current lastUpdateTime value
 CREATE TRIGGER TR_UserAccounts_ValidLastUpdate
 ON UserAccounts

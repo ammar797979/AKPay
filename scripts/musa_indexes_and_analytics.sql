@@ -70,26 +70,26 @@ GO
 
 --sproc for DV
 -- Daily spending pulse for a given month/year
-CREATE OR ALTER PROCEDURE sp_GetDailySpendingTrends
-    @TargetMonth INT,
-    @TargetYear INT
-AS
-BEGIN
-    SET NOCOUNT ON;
+-- CREATE OR ALTER PROCEDURE sp_GetDailySpendingTrends
+--     @TargetMonth INT,
+--     @TargetYear INT
+-- AS
+-- BEGIN
+--     SET NOCOUNT ON;
 
-    SELECT 
-        DAY(rt.txTimeStamp) AS DayOfMonth,
-        COUNT(rt.regularTransactionID) AS TransactionVolume,
-        SUM(rt.amount) AS TotalSpent,
-        AVG(rt.amount) AS AvgTicketSize
-    FROM RegularTransactions rt
-    JOIN TransactionStatuses ts ON rt.txStatusID = ts.statusID
-    WHERE MONTH(rt.txTimeStamp) = @TargetMonth
-      AND YEAR(rt.txTimeStamp) = @TargetYear
-      AND ts.statusName = 'Accepted'
-    GROUP BY DAY(rt.txTimeStamp)
-    ORDER BY DayOfMonth;
-END;
-GO
+--     SELECT 
+--         DAY(rt.txTimeStamp) AS DayOfMonth,
+--         COUNT(rt.regularTransactionID) AS TransactionVolume,
+--         SUM(rt.amount) AS TotalSpent,
+--         AVG(rt.amount) AS AvgTicketSize
+--     FROM RegularTransactions rt
+--     JOIN TransactionStatuses ts ON rt.txStatusID = ts.statusID
+--     WHERE MONTH(rt.txTimeStamp) = @TargetMonth
+--       AND YEAR(rt.txTimeStamp) = @TargetYear
+--       AND ts.statusName = 'Accepted'
+--     GROUP BY DAY(rt.txTimeStamp)
+--     ORDER BY DayOfMonth;
+-- END;
+-- GO
 
--- PRINT 'Group 70: Indexes, analytic views, and visualization procedure deployed successfully.';
+-- -- PRINT 'Group 70: Indexes, analytic views, and visualization procedure deployed successfully.';
