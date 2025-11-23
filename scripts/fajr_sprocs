@@ -304,16 +304,16 @@ BEGIN
 
     --U2U
     SELECT
-    'U2U' as txType,
-    fromUserID AS senderID,
-    dbo.GetSenderName('U2U', UToUTransactionID) AS senderName,
-    toUserID AS receiverID,
-    dbo.GetReceiverName('U2U', UToUTransactionID) AS receiverName,
-    amount,
-    txTimeStamp,
-    NULL AS paymentMode,
-    dbo.GetTXSign('U2U', UToUTransactionID, @UserID, 'User') AS sign
-    From UserToUserTransactions
+        'U2U' as txType,
+        fromUserID AS senderID,
+        dbo.GetSenderName('U2U', UToUTransactionID) AS senderName,
+        toUserID AS receiverID,
+        dbo.GetReceiverName('U2U', UToUTransactionID) AS receiverName,
+        amount,
+        txTimeStamp,
+        NULL AS paymentMode,
+        dbo.GetTXSign('U2U', UToUTransactionID, @UserID, 'User') AS sign
+    FROM UserToUserTransactions
     WHERE fromUserID = @UserID OR toUserID = @UserID
 
     UNION ALL
