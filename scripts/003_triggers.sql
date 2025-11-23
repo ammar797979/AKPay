@@ -142,7 +142,7 @@ BEGIN
     IF EXISTS(
         SELECT 1
         FROM inserted i
-        JOIN deleted d ON i.userID = d.userID
+        JOIN deleted d ON i.vendorID = d.vendorID
         WHERE i.vendorName <> d.vendorName
             OR i.vendorBalance <> d.vendorBalance
             OR i.managerName <> d.managerName
