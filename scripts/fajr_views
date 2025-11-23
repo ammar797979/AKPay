@@ -1,5 +1,5 @@
 -- Chcecks current user balance
-CREATE VIEW dbo.CheckBalance AS
+CREATE OR ALTER VIEW dbo.CheckBalance AS
 SELECT
     u.userID,
     u.userName AS username,
@@ -11,7 +11,7 @@ JOIN UserAccounts ua
 GO
 
 -- Chcecks Vendor Status
-CREATE VIEW dbo.VendorStatus AS
+CREATE OR ALTER VIEW dbo.VendorStatus AS
 SELECT
     v.vendorID,
     v.vendorName,
