@@ -1,9 +1,5 @@
 -- User Validation
-IF OBJECT_ID('dbo.ValidateUser', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.ValidateUser;
-GO
-
-CREATE PROCEDURE dbo.ValidateUser
+CREATE OR ALTER PROCEDURE dbo.ValidateUser
     @UserID INT
 AS
 BEGIN  
@@ -13,11 +9,7 @@ END
 GO
 
 -- Validate vendor
-IF OBJECT_ID('dbo.ValidateVendor', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.ValidateVendor;
-GO
-
-CREATE PROCEDURE dbo.ValidateVendor
+CREATE OR ALTER PROCEDURE dbo.ValidateVendor
     @VendorID INT
 AS
 BEGIN  
@@ -27,11 +19,7 @@ END
 GO
 
 -- Validate Source
-IF OBJECT_ID('dbo.ValidateTopUpSource', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.ValidateTopUpSource;
-GO
-
-CREATE PROCEDURE dbo.ValidateTopUpSource
+CREATE OR ALTER PROCEDURE dbo.ValidateTopUpSource
     @SourceID INT
 AS
 BEGIN  
@@ -41,11 +29,7 @@ END
 GO
 
 --1. TopUp TX
-IF OBJECT_ID('dbo.TopUp_tx', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.TopUp_tx;
-GO
-
-CREATE PROCEDURE dbo.TopUp_tx
+CREATE OR ALTER PROCEDURE dbo.TopUp_tx
     @SourceID INT,
     @ToUserID INT,
     @Amount DECIMAL (20,2)
@@ -85,11 +69,7 @@ END
 GO
 
 --2. U2U Transfer
-IF OBJECT_ID('dbo.U2U_tx', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.U2U_tx;
-GO
-
-CREATE PROCEDURE dbo.U2U_tx
+CREATE OR ALTER PROCEDURE dbo.U2U_tx
     @FromUserID INT,
     @ToUserID INT,
     @Amount DECIMAL (20,2)
@@ -148,11 +128,7 @@ END
 GO
 
 --3. Regular_tx
-IF OBJECT_ID('dbo.Regular_tx', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.Regular_tx;
-GO
-
-CREATE PROCEDURE dbo.Regular_tx
+CREATE OR ALTER PROCEDURE dbo.Regular_tx
     @UserID INT,
     @VendorID INT,
     @Amount DECIMAL(18,2),
@@ -219,11 +195,7 @@ END
 GO
 
 --4. VendorPay
-IF OBJECT_ID('dbo.VendorPay_tx', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.VendorPay_tx;
-GO
-
-CREATE PROCEDURE dbo.VendorPay_tx
+CREATE OR ALTER PROCEDURE dbo.VendorPay_tx
     @SourceID INT,
     @VendorID INT,
     @Amount DECIMAL (20,2)
@@ -265,11 +237,7 @@ END
 GO
 
 -- TX Handling
-IF OBJECT_ID('dbo.TX_Handling', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.TX_Handling;
-GO
-
-CREATE PROCEDURE dbo.TX_Handling
+CREATE OR ALTER PROCEDURE dbo.TX_Handling
     @FromID INT = NULL,
     @ToID INT = NULL,
     @Amount DECIMAL (20,2),
@@ -323,7 +291,7 @@ END
 GO
 
 -- TX History
-CREATE PROCEDURE GetUserTransactionHistory
+CREATE OR ALTER PROCEDURE GetUserTransactionHistory
     @UserID INT
 AS
 BEGIN
@@ -378,7 +346,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE GetVendorTransactionHistory
+CREATE OR ALTER PROCEDURE GetVendorTransactionHistory
     @VendorID INT
 AS
 BEGIN
