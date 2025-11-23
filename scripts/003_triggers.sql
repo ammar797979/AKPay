@@ -97,3 +97,60 @@ BEGIN
     END
 END
 GO
+
+-- lastUpdateTime on UserAccounts
+CREATE TRIGGER TR_UserAccounts_lastUpdateTime
+ON UserAccounts
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF UPDATE(lastUpdateTime)
+        RETURN;
+
+    IF EXISTS(
+        SELECT 1
+        FROM inserted i
+        JOIN deleted d ON i.userID = d.userID
+        WHERE i.userBalance <> d.userBalance
+            OR i.isActive <> d.isActive
+    )
+    BEGIN
+        UPDATE ua
+        SET lastUpdateTime = GETDATE()
+        FROM UserAccounts ua
+        INNER JOIN inserted i ON ua.userID = i.userID;
+    END
+END
+GO
+
+-- lastUpdateTime on Vendors
+CREATE TRIGGER TR_Vendors_lastUpdateTime
+ON Vendors
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF UPDATE(lastUpdateTime)
+        RETURN;
+
+    IF EXISTS(
+        SELECT 1
+        FROM inserted i
+        JOIN deleted d ON i.userID = d.userID
+        WHERE i.vendorName <> d.vendorName
+            OR i.vendorBalance <> d.vendorBalance
+            OR i.managerName <> d.managerName
+            OR i.managerPhone <> d.managerPhone
+            OR i.statusID <> d.statusID
+    )
+    BEGIN
+        UPDATE v
+        SET lastUpdateTime = GETDATE()
+        FROM Vendors v
+        INNER JOIN inserted i ON v.vendorID = i.vendorID;
+    END
+END
+GO
