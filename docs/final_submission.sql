@@ -1,0 +1,23 @@
+SET XACT_ABORT ON;
+SET NOCOUNT ON;
+
+USE master;
+GO
+
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'AKPayDB')
+BEGIN
+    ALTER DATABASE AKPayDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE AKPayDB;
+END
+GO
+
+Create DATABASE AKPayDB;
+GO
+
+USE AKPayDB;
+GO
+
+
+------- Create Tables / Schema Initiation -------
+
+

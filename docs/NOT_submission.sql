@@ -1,4 +1,3 @@
--- GPT suggested keeping this on so script stops on error
 SET XACT_ABORT ON;
 SET NOCOUNT ON;
 
