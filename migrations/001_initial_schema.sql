@@ -20,12 +20,14 @@ GO
 -- Create Tables
 CREATE TABLE Users(
     userID INT IDENTITY(1,1) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone VARCHAR(11) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(11) NOT NULL,
     fullName VARCHAR(100) NOT NULL,
     passwordHash VARCHAR(255) NOT NULL,
     userType VARCHAR(20) NULL,
     dateCreated DATETIME NOT NULL DEFAULT GETDATE(),
+    isDeleted BIT NOT NULL DEFAULT 0,
+    deletedAt DATETIME NULL,
     PRIMARY KEY (userID),
     CONSTRAINT CK_Users_email_LUMS
         CHECK (email LIKE '%@lums.edu.pk' AND email NOT LIKE '% %'),
