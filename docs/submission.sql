@@ -495,7 +495,6 @@ WITH VendorRankings AS (
     WHERE ts.statusName = 'Accepted'
     GROUP BY v.vendorName
 )
-SELECT * FROM VendorRankings;
 GO
 
 -- Monthly user spending statistics (dashboard pre-aggregation)
@@ -1193,11 +1192,11 @@ BEGIN
     fromUserID AS senderID,
     dbo.GetSenderName('U2U', UToUTransactionID) AS senderName,
     toUserID AS receiverID,
-    ru.fullName AS receiverName,
+    dbo.GetReceiverName('U2U', UToUTransactionID) AS receiverName,
     amount,
     txTimeStamp,
     NULL AS paymentMode,
-    dbo.GetTransactionSign('U2U', UToUTransactionID, @UserID, 'User') AS sign
+    dbo.GetTXSign('U2U', UToUTransactionID, @UserID, 'User') AS sign
     From UserToUserTransactions
     WHERE fromUserID = @UserID OR toUserID = @UserID
 
@@ -1213,7 +1212,7 @@ BEGIN
         amount,
         txTimeStamp,
         paymentMode,
-        dbo.GetTransactionSign('Regular', regularTransactionID, @UserID, 'User') AS sign
+        dbo.GetTXSign('Regular', regularTransactionID, @UserID, 'User') AS sign
     FROM RegularTransactions
     WHERE fromUserID = @UserID
 
@@ -1228,7 +1227,7 @@ BEGIN
         amount,
         txTimeStamp,
         NULL AS paymentMode,
-        dbo.GetTransactionSign('TopUp', topUpTransactionID, @UserID, 'User') AS sign
+        dbo.GetTXSign('TopUp', topUpTransactionID, @UserID, 'User') AS sign
     FROM TopUpTransactions t
     WHERE toUserID = @UserID
 
