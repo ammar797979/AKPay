@@ -325,7 +325,7 @@ BEGIN
     ru.fullName AS receiverName,
     amount,
     txTimeStamp,
-    CASE WHEN FromUserID = UserID THEN '-' ELSE '+' END AS sign
+    CASE WHEN fromUserID = @UserID THEN '-' ELSE '+' END AS sign
     From U2UTransactions t
     JOIN Users su ON t.fromUserID = su.userID
     JOIN Users ru ON t.toUserID = ru.userID
