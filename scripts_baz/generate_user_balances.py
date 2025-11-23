@@ -2,7 +2,7 @@ import random
 from datetime import datetime
 
 # Configuration
-NUM_USERS = 500
+NUM_USERS = 2000  # scaled from 500
 
 def generate_balance():
     """Generate random balance between 0.01 and 50000.00"""
@@ -22,7 +22,8 @@ def generate_balance():
 
 # Generate SQL
 print("-- Generated UPDATE statements for UserAccounts table")
-print("-- Total records: 500")
+print(f"-- Total records: {NUM_USERS}")
+print(f"-- 95% of accounts ({int(NUM_USERS*0.95)}) set to IsActive = 1")
 print("-- Generated on:", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 print()
 print("USE AKPayDB;")
@@ -31,12 +32,17 @@ print()
 
 for user_id in range(1, NUM_USERS + 1):
     balance = generate_balance()
-    
-    # Generate UPDATE statement
-    print(f"UPDATE UserAccounts SET userBalance = {balance} WHERE userID = {user_id};")
+    active_cutoff = int(NUM_USERS * 0.95)
+    if user_id <= active_cutoff:
+        print(f"UPDATE UserAccounts SET userBalance = {balance}, IsActive = 1 WHERE userID = {user_id};")
+    else:
+        print(f"UPDATE UserAccounts SET userBalance = {balance} WHERE userID = {user_id};")
 
 print()
 print("GO")
 print()
+print("SELECT * FROM UserAccounts")
+print("GO")
 print(f"-- Successfully generated {NUM_USERS} UPDATE statements")
 print("-- All balances are positive (> 0) and within DECIMAL(12,2) constraints")
+print(f"-- 95% of accounts ({int(NUM_USERS*0.95)}) set to IsActive = 1")

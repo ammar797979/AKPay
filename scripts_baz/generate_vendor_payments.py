@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 # Configuration
-NUM_TRANSACTIONS = 300  # Generate 300 vendor payment transactions
+NUM_TRANSACTIONS = 300  # remain 300 unless scaling requested
 
 # Transaction status IDs:
 # 1 = Pending, 2 = Sync Pending, 3 = Invalid, 4 = Sync Failed, 5 = Accepted
@@ -60,15 +60,15 @@ def generate_random_datetime():
 
 # Generate SQL
 print("-- Generated INSERT statements for VendorPaymentTransaction table")
-print("-- Total records: 300")
+print(f"-- Total records: {NUM_TRANSACTIONS}")
 print("-- Generated on:", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 print()
 print("USE AKPayDB;")
 print("GO")
 print()
 
-# We have 50 vendors (vendorID 1-50)
-NUM_VENDORS = 19
+# We have 500 vendors (vendorID 1-500) after scaling
+NUM_VENDORS = 17
 
 # Each vendor should receive multiple payments over time
 # Create a distribution where some vendors get more payments than others

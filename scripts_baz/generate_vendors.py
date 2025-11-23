@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 # Configuration
-NUM_VENDORS = None
+NUM_VENDORS = 0  # All 17 vendors created in seed_data/002_adding_values.sql - no additional vendors needed
 NULL_MANAGER_NAME_PERCENTAGE = 0.03  # 3%
 NULL_MANAGER_PHONE_PERCENTAGE = 0.03  # 3%
 ON_BREAK_PERCENTAGE = 0.10  # 10%
@@ -29,8 +29,11 @@ restaurant_names = [
     'Bunker',
     'Green Olive'
 ]
-# Set NUM_VENDORS to match the provided vendor name list length
-NUM_VENDORS = len(restaurant_names)
+# Extend vendor names list dynamically if needed
+if NUM_VENDORS > len(restaurant_names):
+    base_len = len(restaurant_names)
+    for i in range(base_len + 1, NUM_VENDORS + 1):
+        restaurant_names.append(f'Generated Vendor {i}')
 
 # Manager names
 manager_first_names = [

@@ -1,58 +1,35 @@
 -- User Validation
-IF OBJECT_ID('dbo.ValidateUser', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.ValidateUser;
-GO
-
-CREATE PROCEDURE dbo.ValidateUser
+CREATE OR ALTER PROCEDURE dbo.ValidateUser
     @UserID INT
 AS
 BEGIN  
-    IF NOT EXISTS(SELECT 1 
-        FROM dbo.Users 
-        WHERE userID = @UserID
-        AND isDeleted = 0)
+    IF NOT EXISTS(SELECT 1 FROM dbo.Users WHERE userID = @UserID)
     THROW 50005, 'Unvalid user.', 1;
 END
 GO
 
 -- Validate vendor
-IF OBJECT_ID('dbo.ValidateVendor', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.ValidateVendor;
-GO
-
-CREATE PROCEDURE dbo.ValidateVendor
+CREATE OR ALTER PROCEDURE dbo.ValidateVendor
     @VendorID INT
 AS
 BEGIN  
-    IF NOT EXISTS(SELECT 1 
-            FROM dbo.Vendors
-            WHERE vendorID = @VendorID)
+    IF NOT EXISTS(SELECT 1 FROM dbo.Vendors WHERE vendorID = @VendorID)
     THROW 50006, 'Unvalid vendor.', 1;
 END
 GO
 
 -- Validate Source
-IF OBJECT_ID('dbo.ValidateTopUpSource', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.ValidateTopUpSource;
-GO
-
-CREATE PROCEDURE dbo.ValidateTopUpSource
+CREATE OR ALTER PROCEDURE dbo.ValidateTopUpSource
     @SourceID INT
 AS
 BEGIN  
-    IF NOT EXISTS(SELECT 1
-            FROM dbo.TopUpSources
-            WHERE sourceID = @SourceID)
+    IF NOT EXISTS(SELECT 1 FROM dbo.TopUpSources WHERE sourceID = @SourceID)
     THROW 50007, 'Unvalid topup source.', 1;
 END
 GO
 
 --1. TopUp TX
-IF OBJECT_ID('dbo.TopUp_tx', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.TopUp_tx;
-GO
-
-CREATE PROCEDURE dbo.TopUp_tx
+CREATE OR ALTER PROCEDURE dbo.TopUp_tx
     @SourceID INT,
     @ToUserID INT,
     @Amount DECIMAL (20,2)
@@ -60,8 +37,8 @@ AS
 BEGIN
     SET XACT_ABORT ON;
 
-    EXEC db.ValidateTopUpSource @SourceID;
-    EXEC db.ValidUser @ToUserID;
+    EXEC dbo.ValidateTopUpSource @SourceID;
+    EXEC dbo.ValidateUser @ToUserID;
 
     BEGIN TRY
         BEGIN TRAN;
@@ -92,11 +69,7 @@ END
 GO
 
 --2. U2U Transfer
-IF OBJECT_ID('dbo.U2U_tx', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.U2U_tx;
-GO
-
-CREATE PROCEDURE dbo.U2U_tx
+CREATE OR ALTER PROCEDURE dbo.U2U_tx
     @FromUserID INT,
     @ToUserID INT,
     @Amount DECIMAL (20,2)
@@ -116,27 +89,17 @@ BEGIN
 
         IF @FromUserID < @ToUserID
         BEGIN
-        SELECT userBalance
-        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
-        WHERE userID = @FromUserID;
-        SELECT userBalance
-        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
-        WHERE userID = @ToUserID;
+        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @FromUserID;
+        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @ToUserID;
         END
         ELSE
         BEGIN
-        SELECT userBalance
-        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
-        WHERE userID = @ToUserID;
-        SELECT userBalance
-        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
-        WHERE userID = @FromUserID;
+        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @ToUserID;
+        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @FromUserID;
         END
 
         DECLARE @FromBalance DECIMAL (20,2);
-        SELECT @FromBalance = userBalance
-        FROM dbo.UserAccounts
-        WHERE userID = @FromUserID;
+        SELECT @FromBalance = userBalance FROM dbo.UserAccounts WHERE userID = @FromUserID;
 
         IF @FromBalance < @Amount
         BEGIN
@@ -149,7 +112,7 @@ BEGIN
             lastUpdateTime = GETDATE()
         WHERE userID = @ToUserID;
 
-        INSERT INTO U2UTransactions(toUserID, fromUserID, amount, txTimeStamp)
+        INSERT INTO UserToUserTransactions (toUserID, fromUserID, amount, txTimeStamp)
         VALUES (@ToUserID, @FromUserID, @Amount, GETDATE());
 
         COMMIT TRAN;
@@ -165,17 +128,21 @@ END
 GO
 
 --3. Regular_tx
-IF OBJECT_ID('dbo.Regular_tx', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.Regular_tx;
-GO
-
-CREATE PROCEDURE dbo.Regular_tx
+CREATE OR ALTER PROCEDURE dbo.Regular_tx
     @UserID INT,
     @VendorID INT,
-    @Amount DECIMAL(18,2)
+    @Amount DECIMAL(18,2),
+    @IsOnline BIT = 0
 AS
 BEGIN
-    SET XOACT_ABORT ON;
+    SET XACT_ABORT ON;
+
+    DECLARE @PaymentMode NVARCHAR(10);
+
+    IF @IsOnline = 1
+        SET @PaymentMode = 'Online';
+    ELSE
+        SET @PaymentMode = 'Offline';
 
     EXEC dbo.ValidateUser @UserID;
     EXEC dbo.ValidateVendor @VendorID;
@@ -185,27 +152,17 @@ BEGIN TRY
 
     IF @UserID < @VendorID
     BEGIN
-    SELECT userBalance
-    FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
-    WHERE userID = @UserID;
-    SELECT vendorBalance
-    FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
-    WHERE vendorID = @VendorID;
+    SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @UserID;
+    SELECT vendorBalance FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE vendorID = @VendorID;
     END
     ELSE
     BEGIN
-    SELECT userBalance
-    FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
-    WHERE vendorID = @VendorID;
-    SELECT vendorBalance
-    FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
-    WHERE userID = @UserID;
+    SELECT vendorBalance FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE vendorID = @VendorID;
+    SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @UserID;
     END
 
     DECLARE @UserBal DECIMAL (20,2);
-    SELECT @UserBal = userBalance
-    FROM dbo.UserAccounts
-    WHERE userID = @UserID;
+    SELECT @UserBal = userBalance FROM dbo.UserAccounts WHERE userID = @UserID;
 
     IF @UserBal < @Amount
         BEGIN
@@ -219,7 +176,7 @@ BEGIN TRY
     WHERE userID = @UserID;
 
     UPDATE dbo.Vendors
-    SET VendorBalance = VendorBalance + @Amount,
+    SET vendorBalance = vendorBalance + @Amount,
         lastUpdateTime = GETDATE()
     WHERE vendorID = @VendorID;
 
@@ -238,11 +195,7 @@ END
 GO
 
 --4. VendorPay
-IF OBJECT_ID('dbo.VendorPay_tx', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.VendorPay_tx;
-GO
-
-CREATE PROCEDURE dbo.VendorPay_tx
+CREATE OR ALTER PROCEDURE dbo.VendorPay_tx
     @SourceID INT,
     @VendorID INT,
     @Amount DECIMAL (20,2)
@@ -284,11 +237,7 @@ END
 GO
 
 -- TX Handling
-IF OBJECT_ID('dbo.TX_Handling', 'P') IS NOT NULL
-    DROP PROCEDURE dbo.TX_Handling;
-GO
-
-CREATE PROCEDURE dbo.TX_Handling
+CREATE OR ALTER PROCEDURE dbo.TX_Handling
     @FromID INT = NULL,
     @ToID INT = NULL,
     @Amount DECIMAL (20,2),
@@ -317,8 +266,13 @@ BEGIN
     END
     ELSE IF @TransactionType = 'Regular'
     BEGIN
+        DECLARE @IsOnline BIT = 0;
+
+        IF @PaymentMode IS NOT NULL AND LOWER(@PaymentMode) = 'online'
+            SET @IsOnline = 1;
+
         EXEC dbo.Regular_tx
-            @FromUserID = @FromID,
+            @UserID = @FromID,
             @VendorID = @ToID,
             @Amount = @Amount;
         RETURN 0;
@@ -337,7 +291,7 @@ END
 GO
 
 -- TX History
-CREATE PROCEDURE GetTransactionHistory
+CREATE OR ALTER PROCEDURE GetUserTransactionHistory
     @UserID INT
 AS
 BEGIN
@@ -347,15 +301,14 @@ BEGIN
     SELECT
     'U2U' as txType,
     fromUserID AS senderID,
-    su.fullName AS senderName,
+    dbo.GetSenderName('U2U', UToUTransactionID) AS senderName,
     toUserID AS receiverID,
     ru.fullName AS receiverName,
     amount,
     txTimeStamp,
-    CASE WHEN fromUserID = @UserID THEN '-' ELSE '+' END AS sign
-    From U2UTransactions t
-    JOIN Users su ON t.fromUserID = su.userID
-    JOIN Users ru ON t.toUserID = ru.userID
+    NULL AS paymentMode,
+    dbo.GetTransactionSign('U2U', UToUTransactionID, @UserID, 'User') AS sign
+    From UserToUserTransactions
     WHERE fromUserID = @UserID OR toUserID = @UserID
 
     UNION ALL
@@ -364,15 +317,14 @@ BEGIN
     SELECT
         'Regular' as txType,
         fromUserID AS senderID,
-        u.fullName AS senderName,
+        dbo.GetSenderName('Regular', regularTransactionID) AS senderName,
         toVendorID AS receiverID,
-        v.vendorName AS receiverName,
+        dbo.GetReceiverName('Regular', regularTransactionID) AS receiverName,
         amount,
         txTimeStamp,
-        '-' AS sign
-    FROM RegularTransactions t
-    JOIN Users u ON t.fromUserID = u.userID
-    JOIN Vendors v ON t.toVendorID = v.vendorID
+        paymentMode,
+        dbo.GetTransactionSign('Regular', regularTransactionID, @UserID, 'User') AS sign
+    FROM RegularTransactions
     WHERE fromUserID = @UserID
 
     UNION ALL
@@ -380,16 +332,56 @@ BEGIN
     SELECT
         'TopUp' AS txType,
         NULL AS senderID,
-        s.SourceName AS senderName,
+        dbo.GetSenderName('TopUp', topUpTransactionID) AS senderName,
         toUserID AS receiverID,
-        u.fullName AS receiverName,
+        dbo.GetReceiverName('TopUp', topUpTransactionID) AS receiverName,
         amount,
         txTimeStamp,
-        '+' AS sign
+        NULL AS paymentMode,
+        dbo.GetTransactionSign('TopUp', topUpTransactionID, @UserID, 'User') AS sign
     FROM TopUpTransactions t
-    JOIN Users u ON t.toUserID = u.userID
-    JOIN TopUpSources s ON t.sourceID = s.sourceID
     WHERE toUserID = @UserID
+
+    ORDER BY txTimeStamp DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE GetVendorTransactionHistory
+    @VendorID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        'Regular' AS txType,
+        t.fromUserID AS senderID,
+        u.fullName AS senderName,
+        t.toVendorID AS receiverID,
+        v.vendorName AS receiverName,
+        t.amount,
+        t.txTimeStamp,
+        t.paymentMode,
+        dbo.GetTXSign('Regular', regularTransactionID, @VendorID, 'Vendor') AS sign
+    FROM RegularTransactions t
+    JOIN Users u ON t.fromUserID = u.userID
+    JOIN Vendors v ON t.toVendorID = v.vendorID
+    WHERE t.toVendorID = @VendorID
+
+    UNION ALL
+
+    SELECT
+        'VendorPay' AS txType,
+        NULL AS senderID,
+        'Admin' AS senderName,
+        t.toVendorID AS receiverID,
+        v.vendorName AS receiverName,
+        t.amount,
+        t.txTimeStamp,
+        'Online' AS paymentMode,
+        dbo.GetTXSign('VendorPay', vendorPaymentTransactionID, @VendorID, 'Vendor') AS sign
+    FROM VendorPaymentTransaction t
+    JOIN Vendors v ON t.toVendorID = v.vendorID
+    WHERE t.toVendorID = @VendorID
 
     ORDER BY txTimeStamp DESC;
 END

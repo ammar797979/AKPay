@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 # Configuration
-NUM_TRANSACTIONS = 800  # Generate 800 top-up transactions
+NUM_TRANSACTIONS = 2000  # scaled from 800 to 2000
 
 # TopUp Source IDs (from 002_adding_values.sql):
 # 1 = Admin, 2 = Bank, 3 = Card, 4 = Cash, 5 = Mobile Wallet, 6 = Cheque
@@ -82,15 +82,15 @@ def generate_random_datetime():
 
 # Generate SQL
 print("-- Generated INSERT statements for TopUpTransactions table")
-print("-- Total records: 800")
+print(f"-- Total records: {NUM_TRANSACTIONS}")
 print("-- Generated on:", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 print()
 print("USE AKPayDB;")
 print("GO")
 print()
 
-# We have 500 users (userID 1-500)
-NUM_USERS = 500
+# We have 2000 users (userID 1-2000)
+NUM_USERS = 2000
 
 for i in range(NUM_TRANSACTIONS):
     source_id = generate_source_id()
