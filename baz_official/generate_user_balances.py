@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import random
 from datetime import datetime, timedelta
 
@@ -59,7 +58,6 @@ print(f"-- Successfully generated {NUM_USERS} INSERT statements")
 print("-- All balances are positive (> 0) and within DECIMAL(12,2) constraints")
 print(f"-- 95% of accounts ({int(NUM_USERS*0.95)}) set to IsActive = 1")
 print("-- lastUpdateTime randomly distributed over last 6 months")
-=======
 import random
 from datetime import datetime
 
@@ -108,4 +106,3 @@ print("GO")
 print(f"-- Successfully generated {NUM_USERS} UPDATE statements")
 print("-- All balances are positive (> 0) and within DECIMAL(12,2) constraints")
 print(f"-- 95% of accounts ({int(NUM_USERS*0.95)}) set to IsActive = 1")
->>>>>>> 6fd24bec855856eefea8e34152ea848082cb775c

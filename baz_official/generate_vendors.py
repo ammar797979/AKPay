@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import random
 from datetime import datetime, timedelta
 
@@ -163,7 +162,6 @@ print(f"-- Approximately {null_manager_phone_count} records have NULL managerPho
 print(f"-- Approximately {int(NUM_VENDORS * ON_BREAK_PERCENTAGE)} records have status 'On Break' ({ON_BREAK_PERCENTAGE*100}%)")
 print(f"-- Majority have status 'Open' (1) or 'Closed' (2)")
 print(f"-- Few have status 'Permanently Closed' (4) or 'Suspended' (5)")
-=======
 import random
 from datetime import datetime, timedelta
 
@@ -328,4 +326,3 @@ print(f"-- Approximately {null_manager_phone_count} records have NULL managerPho
 print(f"-- Approximately {int(NUM_VENDORS * ON_BREAK_PERCENTAGE)} records have status 'On Break' ({ON_BREAK_PERCENTAGE*100}%)")
 print(f"-- Majority have status 'Open' (1) or 'Closed' (2)")
 print(f"-- Few have status 'Permanently Closed' (4) or 'Suspended' (5)")
->>>>>>> 6fd24bec855856eefea8e34152ea848082cb775c
