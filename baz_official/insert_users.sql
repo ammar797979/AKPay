@@ -10,10 +10,10 @@ GO
 SET NOCOUNT ON;
 GO
 
--- ALTER TABLE UserAccounts DISABLE TRIGGER TR_UserAccounts_BlockDirectDelete;
--- GO
---         ALTER TABLE Users DISABLE TRIGGER TR_Users_BlockDirectDelete;
--- GO
+ALTER TABLE UserAccounts DISABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
+GO
+ALTER TABLE Users DISABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
+GO
 
 INSERT INTO Users (email, phone, fullName, passwordHash, userType, dateCreated, IsDeleted, deletedAt)
 VALUES
@@ -5038,6 +5038,11 @@ VALUES
     ('user4999@lums.edu.pk', '31185145663', 'Sumera Hameed', 'bcedf73f7a372524daf2437a175625edf95b7c2decd116b597cd701ff94b98ed', 'teacher', '2024-11-07 09:41:17', 0, NULL),
     ('05000@lums.edu.pk', '31324779031', 'Samina Waseem', '321f4d95dfd79ecf166bc9d1f7f690422791846ff4b710345227520f740be838', 'student', '2024-12-11 21:16:27', 0, NULL);
 
+GO
+
+ALTER TABLE UserAccounts ENABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
+GO
+ALTER TABLE Users ENABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
 GO
 
 -- Successfully generated 5000 INSERT statements in batches of 1000

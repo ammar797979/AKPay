@@ -6,6 +6,14 @@
 USE AKPayDB;
 GO
 
+SET NOCOUNT ON;
+GO
+
+ALTER TABLE UserAccounts DISABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
+GO
+ALTER TABLE Users DISABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
+GO
+
 INSERT INTO UserAccounts (userID, userBalance, lastUpdateTime, IsActive) VALUES (1, 3320.66, '2025-09-06 03:10:02', 1);
 INSERT INTO UserAccounts (userID, userBalance, lastUpdateTime, IsActive) VALUES (2, 8744.59, '2025-07-16 17:44:36', 1);
 INSERT INTO UserAccounts (userID, userBalance, lastUpdateTime, IsActive) VALUES (3, 2180.68, '2025-08-01 22:40:51', 1);
@@ -2007,6 +2015,11 @@ INSERT INTO UserAccounts (userID, userBalance, lastUpdateTime, IsActive) VALUES 
 INSERT INTO UserAccounts (userID, userBalance, lastUpdateTime, IsActive) VALUES (1999, 11829.57, '2025-11-03 16:11:19', 0);
 INSERT INTO UserAccounts (userID, userBalance, lastUpdateTime, IsActive) VALUES (2000, 246.77, '2025-11-08 21:55:14', 0);
 
+GO
+
+ALTER TABLE UserAccounts ENABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
+GO
+ALTER TABLE Users ENABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
 GO
 
 -- Successfully generated 2000 INSERT statements
