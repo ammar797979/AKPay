@@ -7,7 +7,10 @@ CREATE PROCEDURE dbo.ValidateUser
     @UserID INT
 AS
 BEGIN  
-    IF NOT EXISTS(SELECT 1 FROM dbo.Users WHERE userID = @UserID)
+    IF NOT EXISTS(SELECT 1 
+        FROM dbo.Users 
+        WHERE userID = @UserID
+        AND isDeleted = 0)
     THROW 50005, 'Unvalid user.', 1;
 END
 GO
@@ -21,7 +24,9 @@ CREATE PROCEDURE dbo.ValidateVendor
     @VendorID INT
 AS
 BEGIN  
-    IF NOT EXISTS(SELECT 1 FROM dbo.Vendors WHERE vendorID = @VendorID)
+    IF NOT EXISTS(SELECT 1 
+            FROM dbo.Vendors
+            WHERE vendorID = @VendorID)
     THROW 50006, 'Unvalid vendor.', 1;
 END
 GO
@@ -35,7 +40,9 @@ CREATE PROCEDURE dbo.ValidateTopUpSource
     @SourceID INT
 AS
 BEGIN  
-    IF NOT EXISTS(SELECT 1 FROM dbo.TopUpSources WHERE sourceID = @SourceID)
+    IF NOT EXISTS(SELECT 1
+            FROM dbo.TopUpSources
+            WHERE sourceID = @SourceID)
     THROW 50007, 'Unvalid topup source.', 1;
 END
 GO
@@ -109,17 +116,27 @@ BEGIN
 
         IF @FromUserID < @ToUserID
         BEGIN
-        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @FromUserID;
-        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @ToUserID;
+        SELECT userBalance
+        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+        WHERE userID = @FromUserID;
+        SELECT userBalance
+        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+        WHERE userID = @ToUserID;
         END
         ELSE
         BEGIN
-        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @ToUserID;
-        SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @FromUserID;
+        SELECT userBalance
+        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+        WHERE userID = @ToUserID;
+        SELECT userBalance
+        FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+        WHERE userID = @FromUserID;
         END
 
         DECLARE @FromBalance DECIMAL (20,2);
-        SELECT @FromBalance = userBalance FROM dbo.UserAccounts WHERE userID = @FromUserID;
+        SELECT @FromBalance = userBalance
+        FROM dbo.UserAccounts
+        WHERE userID = @FromUserID;
 
         IF @FromBalance < @Amount
         BEGIN
@@ -168,17 +185,27 @@ BEGIN TRY
 
     IF @UserID < @VendorID
     BEGIN
-    SELECT userBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @UserID;
-    SELECT vendorBalance FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE vendorID = @VendorID;
+    SELECT userBalance
+    FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+    WHERE userID = @UserID;
+    SELECT vendorBalance
+    FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+    WHERE vendorID = @VendorID;
     END
     ELSE
     BEGIN
-    SELECT userBalance FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE vendorID = @VendorID;
-    SELECT vendorBalance FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK) WHERE userID = @UserID;
+    SELECT userBalance
+    FROM dbo.Vendors WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+    WHERE vendorID = @VendorID;
+    SELECT vendorBalance
+    FROM dbo.UserAccounts WITH (ROWLOCK, UPDLOCK, HOLDLOCK)
+    WHERE userID = @UserID;
     END
 
     DECLARE @UserBal DECIMAL (20,2);
-    SELECT @UserBal = userBalance FROM dbo.UserAccounts WHERE userID = @UserID;
+    SELECT @UserBal = userBalance
+    FROM dbo.UserAccounts
+    WHERE userID = @UserID;
 
     IF @UserBal < @Amount
         BEGIN
