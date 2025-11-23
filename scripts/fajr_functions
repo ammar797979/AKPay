@@ -1,5 +1,5 @@
 -- FUNC TO GET COUNT PER TRANSACTION TYPE
-CREATE FUNCTION dbo.GetTransactionCount(
+CREATE OR ALTER FUNCTION dbo.GetTransactionCount(
     @UserID INT,
     @TxType NVARCHAR(20)
 )
@@ -76,7 +76,7 @@ GO
 
 
 -- GET RECEIVER NAME
-CREATE FUNCTION dbo.GetReceiverName(
+CREATE OR ALTER FUNCTION dbo.GetReceiverName(
     @TxType NVARCHAR(20),
     @TxID INT
 )
@@ -119,7 +119,7 @@ END;
 GO
 
 -- GET TRANSACTION SIGN
-CREATE FUNCTION dbo.GetTXSign(
+CREATE OR ALTER FUNCTION dbo.GetTXSign(
     @TxType NVARCHAR(20),
     @TxID INT,
     @EntityID INT,
