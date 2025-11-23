@@ -2,7 +2,7 @@
 CREATE VIEW dbo.CheckBalance AS
 SELECT
     u.userID,
-    u.fullName AS username,
+    u.userName AS username,
     ua.userBalance AS balance,
     ua.lastUpdateTime
 FROM Users u
