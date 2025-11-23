@@ -495,6 +495,7 @@ WITH VendorRankings AS (
     WHERE ts.statusName = 'Accepted'
     GROUP BY v.vendorName
 )
+SELECT * FROM VendorRankings;
 GO
 
 -- Monthly user spending statistics (dashboard pre-aggregation)
