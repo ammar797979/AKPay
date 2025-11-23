@@ -3,7 +3,7 @@ CREATE OR ALTER PROCEDURE dbo.ValidateUser
     @UserID INT
 AS
 BEGIN  
-    IF NOT EXISTS(SELECT 1 FROM dbo.Users WHERE userID = @UserID)
+    IF NOT EXISTS(SELECT 1 FROM dbo.Users WHERE userID = @UserID AND isDeleted = 0)
     THROW 50005, 'Unvalid user.', 1;
 END
 GO
