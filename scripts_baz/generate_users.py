@@ -3,8 +3,9 @@ import hashlib
 from datetime import datetime, timedelta
 
 # Configuration
-NUM_USERS = 500
+NUM_USERS = 2000  # scaled from 500 to 2000
 NULL_USERTYPE_PERCENTAGE = 0.10
+DELETED_PERCENTAGE = 0.05  # 5% of users will be marked as deleted (now 100 deleted)
 
 # Generate random names
 first_names = [
@@ -73,6 +74,32 @@ def generate_random_date():
     )
     return random_date.strftime('%Y-%m-%d %H:%M:%S')
 
+def generate_deletion_date(date_created_str):
+    """Generate random deletion datetime after the account was created"""
+    # Parse the creation date
+    date_created = datetime.strptime(date_created_str, '%Y-%m-%d %H:%M:%S')
+    
+    # Calculate days between creation and now
+    days_diff = (datetime.now() - date_created).days
+    
+    # If account was created recently, deletion could be anytime after creation
+    if days_diff > 0:
+        # Random deletion between creation date and now
+        days_after_creation = random.randint(1, max(1, days_diff))
+        deletion_date = date_created + timedelta(days=days_after_creation)
+        # Random time component
+        deletion_date = deletion_date.replace(
+            hour=random.randint(0, 23),
+            minute=random.randint(0, 59),
+            second=random.randint(0, 59),
+            microsecond=0
+        )
+        return deletion_date.strftime('%Y-%m-%d %H:%M:%S')
+    else:
+        # If created today or in future, delete shortly after
+        deletion_date = date_created + timedelta(hours=random.randint(1, 24))
+        return deletion_date.strftime('%Y-%m-%d %H:%M:%S')
+
 def generate_full_name():
     """Generate random full name"""
     first = random.choice(first_names)
@@ -85,8 +112,17 @@ used_phones = set()
 
 # Generate SQL
 print("-- Generated INSERT statements for Users table")
-print("-- Total records: 500")
+print(f"-- Total records: {NUM_USERS}")
+print(f"-- {int(NUM_USERS * DELETED_PERCENTAGE)} accounts marked as deleted ({DELETED_PERCENTAGE*100}%)")
 print("-- Generated on:", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+print()
+print("-- Ensure database exists and is in use")
+print("IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'AKPayDB')")
+print("BEGIN")
+print("    RAISERROR('Database AKPayDB does not exist. Please run 001_initial_schema.sql first.', 16, 1);")
+print("    RETURN;")
+print("END")
+print("GO")
 print()
 print("USE AKPayDB;")
 print("GO")
@@ -95,6 +131,10 @@ print()
 # Calculate how many should have NULL userType (roughly 10%)
 null_usertype_count = int(NUM_USERS * NULL_USERTYPE_PERCENTAGE)
 null_indices = set(random.sample(range(NUM_USERS), null_usertype_count))
+
+# Calculate how many should be deleted (5%)
+deleted_count = int(NUM_USERS * DELETED_PERCENTAGE)
+deleted_indices = set(random.sample(range(NUM_USERS), deleted_count))
 
 for i in range(NUM_USERS):
     user_id = i + 1
@@ -111,13 +151,27 @@ for i in range(NUM_USERS):
     
     date_created = generate_random_date()
     
+    # Determine if deleted (5%)
+    if i in deleted_indices:
+        is_deleted = 1
+        date_deleted = generate_deletion_date(date_created)
+        date_deleted_str = f"'{date_deleted}'"
+    else:
+        is_deleted = 0
+        date_deleted_str = "NULL"
+    
     # Generate INSERT statement
     # Note: userID is IDENTITY so we don't insert it
-    print(f"INSERT INTO Users (email, phone, fullName, passwordHash, userType, dateCreated)")
-    print(f"VALUES ('{email}', '{phone}', '{full_name}', '{password_hash}', {user_type}, '{date_created}');")
+    # Idempotent insert: only insert if email or phone doesn't already exist
+    print(f"IF NOT EXISTS (SELECT 1 FROM Users WHERE email = '{email}' OR phone = '{phone}')")
+    print("BEGIN")
+    print(f"    INSERT INTO Users (email, phone, fullName, passwordHash, userType, dateCreated, IsDeleted, DateDeleted)")
+    print(f"    VALUES ('{email}', '{phone}', '{full_name}', '{password_hash}', {user_type}, '{date_created}', {is_deleted}, {date_deleted_str});")
+    print("END")
 
 print()
 print("GO")
 print()
 print(f"-- Successfully generated {NUM_USERS} INSERT statements")
 print(f"-- Approximately {null_usertype_count} records have NULL userType ({NULL_USERTYPE_PERCENTAGE*100}%)")
+print(f"-- {deleted_count} records marked as deleted ({DELETED_PERCENTAGE*100}%)")
