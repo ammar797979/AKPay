@@ -110,6 +110,11 @@ BEGIN
         UPDATE dbo.UserAccounts
         SET userBalance = userBalance - @Amount,
             lastUpdateTime = GETDATE()
+        WHERE userID = @FromUserID;
+
+        UPDATE dbo.UserAccounts
+        SET userBalance = userBalance + @Amount,
+            lastUpdateTime = GETDATE()
         WHERE userID = @ToUserID;
 
         INSERT INTO UserToUserTransactions (toUserID, fromUserID, amount, txTimeStamp)
