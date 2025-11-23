@@ -134,7 +134,7 @@ BEGIN
             THROW 75013, 'Full Name cannot be empty', 1;
 
         -- Disable triggers to allow sproc to insert
-        ALTER TABLE Users DISABLE TRIGGER TR_User_BlockDirectCreate;
+        ALTER TABLE Users DISABLE TRIGGER TR_Users_BlockDirectCreate;
         ALTER TABLE UserAccounts DISABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
 
         INSERT INTO Users (email, phone, fullName, passwordHash, userType)
@@ -146,7 +146,7 @@ BEGIN
         VALUES (@userID);
 
         -- Re-enable triggers
-        ALTER TABLE Users ENABLE TRIGGER TR_User_BlockDirectCreate;
+        ALTER TABLE Users ENABLE TRIGGER TR_Users_BlockDirectCreate;
         ALTER TABLE UserAccounts ENABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
 
         COMMIT TRANSACTION;

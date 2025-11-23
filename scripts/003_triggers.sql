@@ -42,7 +42,7 @@ END;
 GO
 
 -- Block User creation directly
-CREATE TRIGGER TR_User_BlockDirectCreate
+CREATE TRIGGER TR_Users_BlockDirectCreate
 ON Users
 INSTEAD OF INSERT
 AS

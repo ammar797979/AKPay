@@ -12,7 +12,7 @@ GO
 
 ALTER TABLE UserAccounts DISABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
 GO
-ALTER TABLE Users DISABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
+ALTER TABLE Users DISABLE TRIGGER TR_Users_BlockDirectCreate;
 GO
 
 INSERT INTO Users (email, phone, fullName, passwordHash, userType, dateCreated, IsDeleted, deletedAt)
@@ -5042,9 +5042,11 @@ GO
 
 ALTER TABLE UserAccounts ENABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
 GO
-ALTER TABLE Users ENABLE TRIGGER TR_UserAccounts_BlockDirectCreate;
+ALTER TABLE Users ENABLE TRIGGER TR_Users_BlockDirectCreate;
 GO
 
+SELECT * FROM Users
+GO
 -- Successfully generated 5000 INSERT statements in batches of 1000
 -- Approximately 500 records have NULL userType (10.0%)
 -- 250 records marked as deleted (5.0%)
