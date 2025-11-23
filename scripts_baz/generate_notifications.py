@@ -17,7 +17,7 @@ VENDOR_PAY_TX_COUNT = 300
 U2U_TX_COUNT = 200  # Estimated
 
 NUM_USERS = 500
-NUM_VENDORS = 19  # Updated to match current vendor set
+NUM_VENDORS = 17  # Exactly 17 vendors from seed data
 
 def generate_notification_message(notif_type, tx_type, amount=None):
     """Generate realistic notification message"""

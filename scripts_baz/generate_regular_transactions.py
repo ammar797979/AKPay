@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 # Configuration
-NUM_TRANSACTIONS = 1000  # Generate 1000 transactions
+NUM_TRANSACTIONS = 5000  # scaled from 1000 to 5000
 
 # Transaction status IDs:
 # 1 = Pending, 2 = Sync Pending, 3 = Invalid, 4 = Sync Failed, 5 = Accepted
@@ -62,16 +62,16 @@ def generate_payment_mode():
 
 # Generate SQL
 print("-- Generated INSERT statements for RegularTransactions table")
-print("-- Total records: 1000")
+print(f"-- Total records: {NUM_TRANSACTIONS}")
 print("-- Generated on:", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 print()
 print("USE AKPayDB;")
 print("GO")
 print()
 
-# We have 500 users (userID 1-500) and 50 vendors (vendorID 1-50)
-NUM_USERS = 500
-NUM_VENDORS = 19
+# We have 2000 users (userID 1-2000) and 17 vendors (vendorID 1-17)
+NUM_USERS = 2000
+NUM_VENDORS = 17
 
 for i in range(NUM_TRANSACTIONS):
     from_user_id = random.randint(1, NUM_USERS)
