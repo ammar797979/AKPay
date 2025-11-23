@@ -39,7 +39,7 @@ WITH VendorRankings AS (
     FROM Vendors v
     JOIN RegularTransactions rt ON v.vendorID = rt.toVendorID
     JOIN TransactionStatuses ts ON rt.txStatusID = ts.statusID
-    WHERE ts.statusName = 'Completed'
+    WHERE ts.statusName = 'Accepted'
     GROUP BY v.vendorName
 )
 SELECT * FROM VendorRankings;
@@ -55,7 +55,7 @@ WITH MonthlyStats AS (
         SUM(amount) AS TotalSpent
     FROM RegularTransactions rt
     JOIN TransactionStatuses ts ON rt.txStatusID = ts.statusID
-    WHERE ts.statusName = 'Completed'
+    WHERE ts.statusName = 'Accepted'
     GROUP BY fromUserID, FORMAT(txTimeStamp, 'yyyy-MM')
 )
 SELECT 
@@ -86,7 +86,7 @@ BEGIN
     JOIN TransactionStatuses ts ON rt.txStatusID = ts.statusID
     WHERE MONTH(rt.txTimeStamp) = @TargetMonth
       AND YEAR(rt.txTimeStamp) = @TargetYear
-      AND ts.statusName = 'Completed'
+      AND ts.statusName = 'Accepted'
     GROUP BY DAY(rt.txTimeStamp)
     ORDER BY DayOfMonth;
 END;

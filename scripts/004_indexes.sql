@@ -41,24 +41,6 @@ BEGIN
 END;
 GO
 
-/*TODOs*/
-/*
-indexes on foreign keys:
-RegularTransactions.fromUserID
-RegularTransactions.toVendorID
-TopUpTransactions.toUserID
-UserToUserTransactions.fromUserID
-UserToUserTransactions.toUserID
-VendorPaymentTransactions.toVendorID
-Notifications.recipientID
-
-composite indexes on txStatusID and txTimeStamp for each tx table:
-RegularTransaction.txStatusID and RegularTransaction.txTimeStamp
-TopUpTransactions.txStatusID and TopUpTransactions.txTimeStamp
-UserToUserTransactions.txStatusID and UserToUserTransactions.txTimeStamp
-VendorPaymentTransactions.txStatusID and VendorPaymentTransactions.txTimeStamp
-*/
-
 -- RegularTransactions FKs
 IF NOT EXISTS (
     SELECT 1 FROM sys.indexes 
