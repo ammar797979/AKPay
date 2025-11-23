@@ -7,7 +7,3 @@ It should have files named like:
 Push the directory ONLY, don't push the files you pulled from here if you changed them
 
 Goodnight (7AM btw)
-
-TODO:
-lastupdatetime logics
-there are triggers for this but im not sure if we need them if we think through this properly
