@@ -16,6 +16,16 @@ GO
 
 USE AKPayDB;
 GO
+-- Create Partition Function
+CREATE PARTITION FUNCTION pf_TransactionDate (DATETIME)
+    AS RANGE RIGHT FOR VALUES 
+    ('2024-01-01', '2025-01-01', '2026-01-01');
+GO
+-- Create Partition Scheme
+CREATE PARTITION SCHEME ps_TransactionDate
+    AS PARTITION pf_TransactionDate
+    ALL TO ([PRIMARY]); 
+GO
 
 -- Create Tables
 CREATE TABLE Users(
@@ -90,7 +100,9 @@ CREATE TABLE RegularTransactions(
     txTimeStamp DATETIME NOT NULL DEFAULT GETDATE(),
     paymentMode VARCHAR(10) NOT NULL DEFAULT 'Offline',
     txStatusID INT NOT NULL DEFAULT 1,  -- default is 'Pending'
-    PRIMARY KEY (regularTransactionID),
+    -- Composite PK required for Partitioning
+    CONSTRAINT PK_RegularTransactions 
+        PRIMARY KEY (regularTransactionID, txTimeStamp),
     CONSTRAINT FK_RegTx_Users
         FOREIGN KEY (fromUserID) REFERENCES Users(userID),
     CONSTRAINT FK_RegTx_Vendors
@@ -101,7 +113,8 @@ CREATE TABLE RegularTransactions(
         CHECK (amount > 0),
     CONSTRAINT CK_RegTx_PaymentMode
         CHECK (paymentMode IN ('Offline', 'Online'))
-);
+
+)ON ps_TransactionDate(txTimeStamp);
 GO
 
 CREATE TABLE TopUpSources(
@@ -117,7 +130,8 @@ CREATE TABLE TopUpTransactions(
     amount DECIMAL(12, 2) NOT NULL,
     txTimeStamp DATETIME NOT NULL DEFAULT GETDATE(),
     txStatusID INT NOT NULL DEFAULT 1,  -- default is 'Pending'
-    PRIMARY KEY (topUpTransactionID),
+    CONSTRAINT PK_TopUpTransactions 
+        PRIMARY KEY (topUpTransactionID, txTimeStamp),
     CONSTRAINT FK_TopUpTx_TopUpSources
         FOREIGN KEY (sourceID) REFERENCES TopUpSources(sourceID),
     CONSTRAINT FK_TopUpTx_Users
@@ -126,7 +140,7 @@ CREATE TABLE TopUpTransactions(
         FOREIGN KEY (txStatusID) REFERENCES TransactionStatuses(statusID),
     CONSTRAINT CK_TopUpTx_Amount_Positive
         CHECK (amount > 0)
-);
+)ON ps_TransactionDate(txTimeStamp);
 GO
 
 CREATE TABLE UserToUserTransactions(
@@ -136,7 +150,8 @@ CREATE TABLE UserToUserTransactions(
     amount DECIMAL(12, 2) NOT NULL,
     txTimeStamp DATETIME NOT NULL DEFAULT GETDATE(),
     txStatusID INT NOT NULL DEFAULT 1,  -- default is 'Pending'
-    PRIMARY KEY (UToUTransactionID),
+    CONSTRAINT PK_UserToUserTransactions 
+        PRIMARY KEY (UToUTransactionID, txTimeStamp),
     CONSTRAINT FK_U2UTx_Users_TO
         FOREIGN KEY (toUserID) REFERENCES Users(userID),
     CONSTRAINT FK_U2UTx_Users_FROM
@@ -147,7 +162,7 @@ CREATE TABLE UserToUserTransactions(
         CHECK (toUserID <> fromUserID),
     CONSTRAINT CK_U2UTx_Amount_Positive
         CHECK (amount > 0)
-);
+)ON ps_TransactionDate(txTimeStamp);
 GO
 
 CREATE TABLE VendorPaymentTransaction(
@@ -178,7 +193,8 @@ CREATE TABLE Notifications(
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
     isRead BIT NOT NULL DEFAULT 0,
     notifType VARCHAR(10) NOT NULL --
-    PRIMARY KEY (notificationID),
+    CONSTRAINT PK_Notifications 
+            PRIMARY KEY (notificationID, createdAt),
     CONSTRAINT CK_Notifs_RecipientType
         CHECK (recipientType IN ('User', 'Vendor')),
     CONSTRAINT CK_Notifs_NotifType
@@ -187,5 +203,5 @@ CREATE TABLE Notifications(
         CHECK (isRead IN (0, 1)),
     CONSTRAINT CK_Notifs_TxType
         CHECK (TxType IN ('Regular', 'U2U', 'TopUp', 'VendorPay'))
-);
+)ON ps_TransactionDate(createdAt);
 GO
