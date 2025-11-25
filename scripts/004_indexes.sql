@@ -152,3 +152,13 @@ BEGIN
         INCLUDE (amount);
 END;
 GO
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes 
+    WHERE name = 'IX_Notifications_RecipientID' AND object_id = OBJECT_ID(N'dbo.Notifications')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_Notifications_RecipientID
+        ON Notifications(recipientID)
+        ON ps_TransactionDate(createdAt); -- Aligns index with the data partition
+END;
+GO
