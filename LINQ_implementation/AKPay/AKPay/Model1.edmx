@@ -1,0 +1,1065 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="AKPay.DAL.Models.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Notifications">
+          <Key>
+            <PropertyRef Name="notificationID" />
+            <PropertyRef Name="createdAt" />
+          </Key>
+          <Property Name="notificationID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="recipientType" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="recipientID" Type="int" Nullable="false" />
+          <Property Name="txType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="txID" Type="int" />
+          <Property Name="msg" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+          <Property Name="isRead" Type="bit" Nullable="false" />
+          <Property Name="notifType" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RegularTransactions">
+          <Key>
+            <PropertyRef Name="regularTransactionID" />
+            <PropertyRef Name="txTimeStamp" />
+          </Key>
+          <Property Name="regularTransactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="fromUserID" Type="int" Nullable="false" />
+          <Property Name="toVendorID" Type="int" Nullable="false" />
+          <Property Name="amount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="txTimeStamp" Type="datetime" Nullable="false" />
+          <Property Name="paymentMode" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="txStatusID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TopUpSources">
+          <Key>
+            <PropertyRef Name="sourceID" />
+          </Key>
+          <Property Name="sourceID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sourceName" Type="varchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TopUpTransactions">
+          <Key>
+            <PropertyRef Name="topUpTransactionID" />
+            <PropertyRef Name="txTimeStamp" />
+          </Key>
+          <Property Name="topUpTransactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sourceID" Type="int" Nullable="false" />
+          <Property Name="toUserID" Type="int" Nullable="false" />
+          <Property Name="amount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="txTimeStamp" Type="datetime" Nullable="false" />
+          <Property Name="txStatusID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TransactionStatuses">
+          <Key>
+            <PropertyRef Name="statusID" />
+          </Key>
+          <Property Name="statusID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="statusName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="statusDescription" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="UserAccounts">
+          <Key>
+            <PropertyRef Name="userID" />
+          </Key>
+          <Property Name="userID" Type="int" Nullable="false" />
+          <Property Name="userBalance" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="lastUpdateTime" Type="datetime" Nullable="false" />
+          <Property Name="isActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="userID" />
+          </Key>
+          <Property Name="userID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="phone" Type="varchar" MaxLength="11" Nullable="false" />
+          <Property Name="fullName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="passwordHash" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="userType" Type="varchar" MaxLength="20" />
+          <Property Name="dateCreated" Type="datetime" Nullable="false" />
+          <Property Name="isDeleted" Type="bit" Nullable="false" />
+          <Property Name="deletedAt" Type="datetime" />
+        </EntityType>
+        <EntityType Name="UserToUserTransactions">
+          <Key>
+            <PropertyRef Name="UToUTransactionID" />
+            <PropertyRef Name="txTimeStamp" />
+          </Key>
+          <Property Name="UToUTransactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="toUserID" Type="int" Nullable="false" />
+          <Property Name="fromUserID" Type="int" Nullable="false" />
+          <Property Name="amount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="txTimeStamp" Type="datetime" Nullable="false" />
+          <Property Name="txStatusID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VendorPaymentTransaction">
+          <Key>
+            <PropertyRef Name="vendorPaymentTransactionID" />
+          </Key>
+          <Property Name="vendorPaymentTransactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="toVendorID" Type="int" Nullable="false" />
+          <Property Name="amount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="txTimeStamp" Type="datetime" Nullable="false" />
+          <Property Name="txStatusID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Vendors">
+          <Key>
+            <PropertyRef Name="vendorID" />
+          </Key>
+          <Property Name="vendorID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="vendorName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="vendorBalance" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="lastUpdateTime" Type="datetime" Nullable="false" />
+          <Property Name="managerName" Type="varchar" MaxLength="100" />
+          <Property Name="managerPhone" Type="varchar" MaxLength="11" />
+          <Property Name="statusID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VendorStatuses">
+          <Key>
+            <PropertyRef Name="statusID" />
+          </Key>
+          <Property Name="statusID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="statusName" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="tillWhen" Type="datetime" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'AKPayDB.dbo.CheckBalance' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="CheckBalance">
+          <Key>
+            <PropertyRef Name="userID" />
+            <PropertyRef Name="username" />
+            <PropertyRef Name="balance" />
+            <PropertyRef Name="lastUpdateTime" />
+          </Key>
+          <Property Name="userID" Type="int" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="balance" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="lastUpdateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'AKPayDB.dbo.VendorStatus' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="VendorStatus">
+          <Key>
+            <PropertyRef Name="vendorID" />
+            <PropertyRef Name="vendorName" />
+            <PropertyRef Name="vendorBalance" />
+            <PropertyRef Name="CurrentStatus" />
+            <PropertyRef Name="lastUpdateTime" />
+          </Key>
+          <Property Name="vendorID" Type="int" Nullable="false" />
+          <Property Name="vendorName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="vendorBalance" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="CurrentStatus" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="managerName" Type="varchar" MaxLength="100" />
+          <Property Name="managerPhone" Type="varchar" MaxLength="11" />
+          <Property Name="lastUpdateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'AKPayDB.dbo.vw_UserMonthlyStats' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_UserMonthlyStats">
+          <Key>
+            <PropertyRef Name="userFullName" />
+            <PropertyRef Name="email" />
+          </Key>
+          <Property Name="userFullName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="TransactionMonth" Type="nvarchar" MaxLength="4000" />
+          <Property Name="TotalSpent" Type="decimal" Precision="38" Scale="2" />
+          <Property Name="AvgTransactionSize" Type="decimal" Precision="38" Scale="6" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'AKPayDB.dbo.vw_VendorPerformanceRankings' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_VendorPerformanceRankings">
+          <Key>
+            <PropertyRef Name="vendorName" />
+          </Key>
+          <Property Name="vendorName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="TotalTransactions" Type="int" />
+          <Property Name="TotalRevenue" Type="decimal" Precision="38" Scale="2" />
+          <Property Name="RankPosition" Type="bigint" />
+        </EntityType>
+        <Association Name="FK_RegTx_TxStatuses">
+          <End Role="TransactionStatuses" Type="Self.TransactionStatuses" Multiplicity="1" />
+          <End Role="RegularTransactions" Type="Self.RegularTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="RegularTransactions">
+              <PropertyRef Name="txStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RegTx_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="RegularTransactions" Type="Self.RegularTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="RegularTransactions">
+              <PropertyRef Name="fromUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RegTx_Vendors">
+          <End Role="Vendors" Type="Self.Vendors" Multiplicity="1" />
+          <End Role="RegularTransactions" Type="Self.RegularTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vendors">
+              <PropertyRef Name="vendorID" />
+            </Principal>
+            <Dependent Role="RegularTransactions">
+              <PropertyRef Name="toVendorID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TopUpTx_TopUpSources">
+          <End Role="TopUpSources" Type="Self.TopUpSources" Multiplicity="1" />
+          <End Role="TopUpTransactions" Type="Self.TopUpTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TopUpSources">
+              <PropertyRef Name="sourceID" />
+            </Principal>
+            <Dependent Role="TopUpTransactions">
+              <PropertyRef Name="sourceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TopUpTx_TxStatuses">
+          <End Role="TransactionStatuses" Type="Self.TransactionStatuses" Multiplicity="1" />
+          <End Role="TopUpTransactions" Type="Self.TopUpTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="TopUpTransactions">
+              <PropertyRef Name="txStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TopUpTx_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="TopUpTransactions" Type="Self.TopUpTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="TopUpTransactions">
+              <PropertyRef Name="toUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_U2UTx_TxStatuses">
+          <End Role="TransactionStatuses" Type="Self.TransactionStatuses" Multiplicity="1" />
+          <End Role="UserToUserTransactions" Type="Self.UserToUserTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="UserToUserTransactions">
+              <PropertyRef Name="txStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_U2UTx_Users_FROM">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserToUserTransactions" Type="Self.UserToUserTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="UserToUserTransactions">
+              <PropertyRef Name="fromUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_U2UTx_Users_TO">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserToUserTransactions" Type="Self.UserToUserTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="UserToUserTransactions">
+              <PropertyRef Name="toUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserAccounts_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserAccounts" Type="Self.UserAccounts" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="UserAccounts">
+              <PropertyRef Name="userID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VendorPayTx_TxStatuses">
+          <End Role="TransactionStatuses" Type="Self.TransactionStatuses" Multiplicity="1" />
+          <End Role="VendorPaymentTransaction" Type="Self.VendorPaymentTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="VendorPaymentTransaction">
+              <PropertyRef Name="txStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VendorPayTx_Vendors">
+          <End Role="Vendors" Type="Self.Vendors" Multiplicity="1" />
+          <End Role="VendorPaymentTransaction" Type="Self.VendorPaymentTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vendors">
+              <PropertyRef Name="vendorID" />
+            </Principal>
+            <Dependent Role="VendorPaymentTransaction">
+              <PropertyRef Name="toVendorID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vendors_VendorStatuses">
+          <End Role="VendorStatuses" Type="Self.VendorStatuses" Multiplicity="1" />
+          <End Role="Vendors" Type="Self.Vendors" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VendorStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="Vendors">
+              <PropertyRef Name="statusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AKPayDALModelsStoreContainer">
+          <EntitySet Name="Notifications" EntityType="Self.Notifications" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RegularTransactions" EntityType="Self.RegularTransactions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TopUpSources" EntityType="Self.TopUpSources" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TopUpTransactions" EntityType="Self.TopUpTransactions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TransactionStatuses" EntityType="Self.TransactionStatuses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserAccounts" EntityType="Self.UserAccounts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserToUserTransactions" EntityType="Self.UserToUserTransactions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VendorPaymentTransaction" EntityType="Self.VendorPaymentTransaction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Vendors" EntityType="Self.Vendors" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VendorStatuses" EntityType="Self.VendorStatuses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CheckBalance" EntityType="Self.CheckBalance" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [CheckBalance].[userID] AS [userID], 
+    [CheckBalance].[username] AS [username], 
+    [CheckBalance].[balance] AS [balance], 
+    [CheckBalance].[lastUpdateTime] AS [lastUpdateTime]
+    FROM [dbo].[CheckBalance] AS [CheckBalance]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="VendorStatus" EntityType="Self.VendorStatus" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [VendorStatus].[vendorID] AS [vendorID], 
+    [VendorStatus].[vendorName] AS [vendorName], 
+    [VendorStatus].[vendorBalance] AS [vendorBalance], 
+    [VendorStatus].[CurrentStatus] AS [CurrentStatus], 
+    [VendorStatus].[managerName] AS [managerName], 
+    [VendorStatus].[managerPhone] AS [managerPhone], 
+    [VendorStatus].[lastUpdateTime] AS [lastUpdateTime]
+    FROM [dbo].[VendorStatus] AS [VendorStatus]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_UserMonthlyStats" EntityType="Self.vw_UserMonthlyStats" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_UserMonthlyStats].[userFullName] AS [userFullName], 
+    [vw_UserMonthlyStats].[email] AS [email], 
+    [vw_UserMonthlyStats].[TransactionMonth] AS [TransactionMonth], 
+    [vw_UserMonthlyStats].[TotalSpent] AS [TotalSpent], 
+    [vw_UserMonthlyStats].[AvgTransactionSize] AS [AvgTransactionSize]
+    FROM [dbo].[vw_UserMonthlyStats] AS [vw_UserMonthlyStats]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_VendorPerformanceRankings" EntityType="Self.vw_VendorPerformanceRankings" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_VendorPerformanceRankings].[vendorName] AS [vendorName], 
+    [vw_VendorPerformanceRankings].[TotalTransactions] AS [TotalTransactions], 
+    [vw_VendorPerformanceRankings].[TotalRevenue] AS [TotalRevenue], 
+    [vw_VendorPerformanceRankings].[RankPosition] AS [RankPosition]
+    FROM [dbo].[vw_VendorPerformanceRankings] AS [vw_VendorPerformanceRankings]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_RegTx_TxStatuses" Association="Self.FK_RegTx_TxStatuses">
+            <End Role="TransactionStatuses" EntitySet="TransactionStatuses" />
+            <End Role="RegularTransactions" EntitySet="RegularTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RegTx_Users" Association="Self.FK_RegTx_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="RegularTransactions" EntitySet="RegularTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RegTx_Vendors" Association="Self.FK_RegTx_Vendors">
+            <End Role="Vendors" EntitySet="Vendors" />
+            <End Role="RegularTransactions" EntitySet="RegularTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TopUpTx_TopUpSources" Association="Self.FK_TopUpTx_TopUpSources">
+            <End Role="TopUpSources" EntitySet="TopUpSources" />
+            <End Role="TopUpTransactions" EntitySet="TopUpTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TopUpTx_TxStatuses" Association="Self.FK_TopUpTx_TxStatuses">
+            <End Role="TransactionStatuses" EntitySet="TransactionStatuses" />
+            <End Role="TopUpTransactions" EntitySet="TopUpTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TopUpTx_Users" Association="Self.FK_TopUpTx_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="TopUpTransactions" EntitySet="TopUpTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_U2UTx_TxStatuses" Association="Self.FK_U2UTx_TxStatuses">
+            <End Role="TransactionStatuses" EntitySet="TransactionStatuses" />
+            <End Role="UserToUserTransactions" EntitySet="UserToUserTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_U2UTx_Users_FROM" Association="Self.FK_U2UTx_Users_FROM">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserToUserTransactions" EntitySet="UserToUserTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_U2UTx_Users_TO" Association="Self.FK_U2UTx_Users_TO">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserToUserTransactions" EntitySet="UserToUserTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserAccounts_Users" Association="Self.FK_UserAccounts_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserAccounts" EntitySet="UserAccounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VendorPayTx_TxStatuses" Association="Self.FK_VendorPayTx_TxStatuses">
+            <End Role="TransactionStatuses" EntitySet="TransactionStatuses" />
+            <End Role="VendorPaymentTransaction" EntitySet="VendorPaymentTransaction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VendorPayTx_Vendors" Association="Self.FK_VendorPayTx_Vendors">
+            <End Role="Vendors" EntitySet="Vendors" />
+            <End Role="VendorPaymentTransaction" EntitySet="VendorPaymentTransaction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vendors_VendorStatuses" Association="Self.FK_Vendors_VendorStatuses">
+            <End Role="VendorStatuses" EntitySet="VendorStatuses" />
+            <End Role="Vendors" EntitySet="Vendors" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="AKPay.DAL.Models" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Notification">
+          <Key>
+            <PropertyRef Name="notificationID" />
+            <PropertyRef Name="createdAt" />
+          </Key>
+          <Property Name="notificationID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="recipientType" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="recipientID" Type="Int32" Nullable="false" />
+          <Property Name="txType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="txID" Type="Int32" />
+          <Property Name="msg" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="isRead" Type="Boolean" Nullable="false" />
+          <Property Name="notifType" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RegularTransaction">
+          <Key>
+            <PropertyRef Name="regularTransactionID" />
+            <PropertyRef Name="txTimeStamp" />
+          </Key>
+          <Property Name="regularTransactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="fromUserID" Type="Int32" Nullable="false" />
+          <Property Name="toVendorID" Type="Int32" Nullable="false" />
+          <Property Name="amount" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="txTimeStamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="paymentMode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="txStatusID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="TransactionStatus" Relationship="Self.FK_RegTx_TxStatuses" FromRole="RegularTransactions" ToRole="TransactionStatuses" />
+          <NavigationProperty Name="User" Relationship="Self.FK_RegTx_Users" FromRole="RegularTransactions" ToRole="Users" />
+          <NavigationProperty Name="Vendor" Relationship="Self.FK_RegTx_Vendors" FromRole="RegularTransactions" ToRole="Vendors" />
+        </EntityType>
+        <EntityType Name="TopUpSource">
+          <Key>
+            <PropertyRef Name="sourceID" />
+          </Key>
+          <Property Name="sourceID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sourceName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="TopUpTransactions" Relationship="Self.FK_TopUpTx_TopUpSources" FromRole="TopUpSources" ToRole="TopUpTransactions" />
+        </EntityType>
+        <EntityType Name="TopUpTransaction">
+          <Key>
+            <PropertyRef Name="topUpTransactionID" />
+            <PropertyRef Name="txTimeStamp" />
+          </Key>
+          <Property Name="topUpTransactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sourceID" Type="Int32" Nullable="false" />
+          <Property Name="toUserID" Type="Int32" Nullable="false" />
+          <Property Name="amount" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="txTimeStamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="txStatusID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="TopUpSource" Relationship="Self.FK_TopUpTx_TopUpSources" FromRole="TopUpTransactions" ToRole="TopUpSources" />
+          <NavigationProperty Name="TransactionStatus" Relationship="Self.FK_TopUpTx_TxStatuses" FromRole="TopUpTransactions" ToRole="TransactionStatuses" />
+          <NavigationProperty Name="User" Relationship="Self.FK_TopUpTx_Users" FromRole="TopUpTransactions" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="TransactionStatus">
+          <Key>
+            <PropertyRef Name="statusID" />
+          </Key>
+          <Property Name="statusID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="statusName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="statusDescription" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RegularTransactions" Relationship="Self.FK_RegTx_TxStatuses" FromRole="TransactionStatuses" ToRole="RegularTransactions" />
+          <NavigationProperty Name="TopUpTransactions" Relationship="Self.FK_TopUpTx_TxStatuses" FromRole="TransactionStatuses" ToRole="TopUpTransactions" />
+          <NavigationProperty Name="UserToUserTransactions" Relationship="Self.FK_U2UTx_TxStatuses" FromRole="TransactionStatuses" ToRole="UserToUserTransactions" />
+          <NavigationProperty Name="VendorPaymentTransactions" Relationship="Self.FK_VendorPayTx_TxStatuses" FromRole="TransactionStatuses" ToRole="VendorPaymentTransaction" />
+        </EntityType>
+        <EntityType Name="UserAccount">
+          <Key>
+            <PropertyRef Name="userID" />
+          </Key>
+          <Property Name="userID" Type="Int32" Nullable="false" />
+          <Property Name="userBalance" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="lastUpdateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="isActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="Self.FK_UserAccounts_Users" FromRole="UserAccounts" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="userID" />
+          </Key>
+          <Property Name="userID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="phone" Type="String" MaxLength="11" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="fullName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="passwordHash" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="userType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="dateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="isDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="deletedAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="RegularTransactions" Relationship="Self.FK_RegTx_Users" FromRole="Users" ToRole="RegularTransactions" />
+          <NavigationProperty Name="TopUpTransactions" Relationship="Self.FK_TopUpTx_Users" FromRole="Users" ToRole="TopUpTransactions" />
+          <NavigationProperty Name="UserAccount" Relationship="Self.FK_UserAccounts_Users" FromRole="Users" ToRole="UserAccounts" />
+          <NavigationProperty Name="UserToUserTransactions" Relationship="Self.FK_U2UTx_Users_FROM" FromRole="Users" ToRole="UserToUserTransactions" />
+          <NavigationProperty Name="UserToUserTransactions1" Relationship="Self.FK_U2UTx_Users_TO" FromRole="Users" ToRole="UserToUserTransactions" />
+        </EntityType>
+        <EntityType Name="UserToUserTransaction">
+          <Key>
+            <PropertyRef Name="UToUTransactionID" />
+            <PropertyRef Name="txTimeStamp" />
+          </Key>
+          <Property Name="UToUTransactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="toUserID" Type="Int32" Nullable="false" />
+          <Property Name="fromUserID" Type="Int32" Nullable="false" />
+          <Property Name="amount" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="txTimeStamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="txStatusID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="TransactionStatus" Relationship="Self.FK_U2UTx_TxStatuses" FromRole="UserToUserTransactions" ToRole="TransactionStatuses" />
+          <NavigationProperty Name="User" Relationship="Self.FK_U2UTx_Users_FROM" FromRole="UserToUserTransactions" ToRole="Users" />
+          <NavigationProperty Name="User1" Relationship="Self.FK_U2UTx_Users_TO" FromRole="UserToUserTransactions" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="VendorPaymentTransaction">
+          <Key>
+            <PropertyRef Name="vendorPaymentTransactionID" />
+          </Key>
+          <Property Name="vendorPaymentTransactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="toVendorID" Type="Int32" Nullable="false" />
+          <Property Name="amount" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="txTimeStamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="txStatusID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="TransactionStatus" Relationship="Self.FK_VendorPayTx_TxStatuses" FromRole="VendorPaymentTransaction" ToRole="TransactionStatuses" />
+          <NavigationProperty Name="Vendor" Relationship="Self.FK_VendorPayTx_Vendors" FromRole="VendorPaymentTransaction" ToRole="Vendors" />
+        </EntityType>
+        <EntityType Name="Vendor">
+          <Key>
+            <PropertyRef Name="vendorID" />
+          </Key>
+          <Property Name="vendorID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="vendorName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="vendorBalance" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="lastUpdateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="managerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="managerPhone" Type="String" MaxLength="11" FixedLength="false" Unicode="false" />
+          <Property Name="statusID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RegularTransactions" Relationship="Self.FK_RegTx_Vendors" FromRole="Vendors" ToRole="RegularTransactions" />
+          <NavigationProperty Name="VendorPaymentTransactions" Relationship="Self.FK_VendorPayTx_Vendors" FromRole="Vendors" ToRole="VendorPaymentTransaction" />
+          <NavigationProperty Name="VendorStatus" Relationship="Self.FK_Vendors_VendorStatuses" FromRole="Vendors" ToRole="VendorStatuses" />
+        </EntityType>
+        <EntityType Name="VendorStatus">
+          <Key>
+            <PropertyRef Name="statusID" />
+          </Key>
+          <Property Name="statusID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="statusName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="tillWhen" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Vendors" Relationship="Self.FK_Vendors_VendorStatuses" FromRole="VendorStatuses" ToRole="Vendors" />
+        </EntityType>
+        <EntityType Name="CheckBalance">
+          <Key>
+            <PropertyRef Name="userID" />
+            <PropertyRef Name="username" />
+            <PropertyRef Name="balance" />
+            <PropertyRef Name="lastUpdateTime" />
+          </Key>
+          <Property Name="userID" Type="Int32" Nullable="false" />
+          <Property Name="username" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="balance" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="lastUpdateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="VendorStatu">
+          <Key>
+            <PropertyRef Name="vendorID" />
+            <PropertyRef Name="vendorName" />
+            <PropertyRef Name="vendorBalance" />
+            <PropertyRef Name="CurrentStatus" />
+            <PropertyRef Name="lastUpdateTime" />
+          </Key>
+          <Property Name="vendorID" Type="Int32" Nullable="false" />
+          <Property Name="vendorName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="vendorBalance" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="CurrentStatus" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="managerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="managerPhone" Type="String" MaxLength="11" FixedLength="false" Unicode="false" />
+          <Property Name="lastUpdateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="vw_UserMonthlyStats">
+          <Key>
+            <PropertyRef Name="userFullName" />
+            <PropertyRef Name="email" />
+          </Key>
+          <Property Name="userFullName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TransactionMonth" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="TotalSpent" Type="Decimal" Precision="38" Scale="2" />
+          <Property Name="AvgTransactionSize" Type="Decimal" Precision="38" Scale="6" />
+        </EntityType>
+        <EntityType Name="vw_VendorPerformanceRankings">
+          <Key>
+            <PropertyRef Name="vendorName" />
+          </Key>
+          <Property Name="vendorName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TotalTransactions" Type="Int32" />
+          <Property Name="TotalRevenue" Type="Decimal" Precision="38" Scale="2" />
+          <Property Name="RankPosition" Type="Int64" />
+        </EntityType>
+        <Association Name="FK_RegTx_TxStatuses">
+          <End Role="TransactionStatuses" Type="Self.TransactionStatus" Multiplicity="1" />
+          <End Role="RegularTransactions" Type="Self.RegularTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="RegularTransactions">
+              <PropertyRef Name="txStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RegTx_Users">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="RegularTransactions" Type="Self.RegularTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="RegularTransactions">
+              <PropertyRef Name="fromUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RegTx_Vendors">
+          <End Role="Vendors" Type="Self.Vendor" Multiplicity="1" />
+          <End Role="RegularTransactions" Type="Self.RegularTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vendors">
+              <PropertyRef Name="vendorID" />
+            </Principal>
+            <Dependent Role="RegularTransactions">
+              <PropertyRef Name="toVendorID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TopUpTx_TopUpSources">
+          <End Role="TopUpSources" Type="Self.TopUpSource" Multiplicity="1" />
+          <End Role="TopUpTransactions" Type="Self.TopUpTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TopUpSources">
+              <PropertyRef Name="sourceID" />
+            </Principal>
+            <Dependent Role="TopUpTransactions">
+              <PropertyRef Name="sourceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TopUpTx_TxStatuses">
+          <End Role="TransactionStatuses" Type="Self.TransactionStatus" Multiplicity="1" />
+          <End Role="TopUpTransactions" Type="Self.TopUpTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="TopUpTransactions">
+              <PropertyRef Name="txStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TopUpTx_Users">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="TopUpTransactions" Type="Self.TopUpTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="TopUpTransactions">
+              <PropertyRef Name="toUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_U2UTx_TxStatuses">
+          <End Role="TransactionStatuses" Type="Self.TransactionStatus" Multiplicity="1" />
+          <End Role="UserToUserTransactions" Type="Self.UserToUserTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="UserToUserTransactions">
+              <PropertyRef Name="txStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VendorPayTx_TxStatuses">
+          <End Role="TransactionStatuses" Type="Self.TransactionStatus" Multiplicity="1" />
+          <End Role="VendorPaymentTransaction" Type="Self.VendorPaymentTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="VendorPaymentTransaction">
+              <PropertyRef Name="txStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserAccounts_Users">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="UserAccounts" Type="Self.UserAccount" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="UserAccounts">
+              <PropertyRef Name="userID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_U2UTx_Users_FROM">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="UserToUserTransactions" Type="Self.UserToUserTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="UserToUserTransactions">
+              <PropertyRef Name="fromUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_U2UTx_Users_TO">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="UserToUserTransactions" Type="Self.UserToUserTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="UserToUserTransactions">
+              <PropertyRef Name="toUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VendorPayTx_Vendors">
+          <End Role="Vendors" Type="Self.Vendor" Multiplicity="1" />
+          <End Role="VendorPaymentTransaction" Type="Self.VendorPaymentTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vendors">
+              <PropertyRef Name="vendorID" />
+            </Principal>
+            <Dependent Role="VendorPaymentTransaction">
+              <PropertyRef Name="toVendorID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vendors_VendorStatuses">
+          <End Role="VendorStatuses" Type="Self.VendorStatus" Multiplicity="1" />
+          <End Role="Vendors" Type="Self.Vendor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VendorStatuses">
+              <PropertyRef Name="statusID" />
+            </Principal>
+            <Dependent Role="Vendors">
+              <PropertyRef Name="statusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Notifications" EntityType="Self.Notification" />
+          <EntitySet Name="RegularTransactions" EntityType="Self.RegularTransaction" />
+          <EntitySet Name="TopUpSources" EntityType="Self.TopUpSource" />
+          <EntitySet Name="TopUpTransactions" EntityType="Self.TopUpTransaction" />
+          <EntitySet Name="TransactionStatuses" EntityType="Self.TransactionStatus" />
+          <EntitySet Name="UserAccounts" EntityType="Self.UserAccount" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="UserToUserTransactions" EntityType="Self.UserToUserTransaction" />
+          <EntitySet Name="VendorPaymentTransactions" EntityType="Self.VendorPaymentTransaction" />
+          <EntitySet Name="Vendors" EntityType="Self.Vendor" />
+          <EntitySet Name="VendorStatuses" EntityType="Self.VendorStatus" />
+          <EntitySet Name="CheckBalances" EntityType="Self.CheckBalance" />
+          <EntitySet Name="VendorStatus" EntityType="Self.VendorStatu" />
+          <EntitySet Name="vw_UserMonthlyStats" EntityType="Self.vw_UserMonthlyStats" />
+          <EntitySet Name="vw_VendorPerformanceRankings" EntityType="Self.vw_VendorPerformanceRankings" />
+          <AssociationSet Name="FK_RegTx_TxStatuses" Association="Self.FK_RegTx_TxStatuses">
+            <End Role="TransactionStatuses" EntitySet="TransactionStatuses" />
+            <End Role="RegularTransactions" EntitySet="RegularTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RegTx_Users" Association="Self.FK_RegTx_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="RegularTransactions" EntitySet="RegularTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RegTx_Vendors" Association="Self.FK_RegTx_Vendors">
+            <End Role="Vendors" EntitySet="Vendors" />
+            <End Role="RegularTransactions" EntitySet="RegularTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TopUpTx_TopUpSources" Association="Self.FK_TopUpTx_TopUpSources">
+            <End Role="TopUpSources" EntitySet="TopUpSources" />
+            <End Role="TopUpTransactions" EntitySet="TopUpTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TopUpTx_TxStatuses" Association="Self.FK_TopUpTx_TxStatuses">
+            <End Role="TransactionStatuses" EntitySet="TransactionStatuses" />
+            <End Role="TopUpTransactions" EntitySet="TopUpTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TopUpTx_Users" Association="Self.FK_TopUpTx_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="TopUpTransactions" EntitySet="TopUpTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_U2UTx_TxStatuses" Association="Self.FK_U2UTx_TxStatuses">
+            <End Role="TransactionStatuses" EntitySet="TransactionStatuses" />
+            <End Role="UserToUserTransactions" EntitySet="UserToUserTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VendorPayTx_TxStatuses" Association="Self.FK_VendorPayTx_TxStatuses">
+            <End Role="TransactionStatuses" EntitySet="TransactionStatuses" />
+            <End Role="VendorPaymentTransaction" EntitySet="VendorPaymentTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserAccounts_Users" Association="Self.FK_UserAccounts_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserAccounts" EntitySet="UserAccounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_U2UTx_Users_FROM" Association="Self.FK_U2UTx_Users_FROM">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserToUserTransactions" EntitySet="UserToUserTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_U2UTx_Users_TO" Association="Self.FK_U2UTx_Users_TO">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserToUserTransactions" EntitySet="UserToUserTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VendorPayTx_Vendors" Association="Self.FK_VendorPayTx_Vendors">
+            <End Role="Vendors" EntitySet="Vendors" />
+            <End Role="VendorPaymentTransaction" EntitySet="VendorPaymentTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vendors_VendorStatuses" Association="Self.FK_Vendors_VendorStatuses">
+            <End Role="VendorStatuses" EntitySet="VendorStatuses" />
+            <End Role="Vendors" EntitySet="Vendors" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="AKPayDALModelsStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="Notifications">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.Notification">
+              <MappingFragment StoreEntitySet="Notifications">
+                <ScalarProperty Name="notificationID" ColumnName="notificationID" />
+                <ScalarProperty Name="recipientType" ColumnName="recipientType" />
+                <ScalarProperty Name="recipientID" ColumnName="recipientID" />
+                <ScalarProperty Name="txType" ColumnName="txType" />
+                <ScalarProperty Name="txID" ColumnName="txID" />
+                <ScalarProperty Name="msg" ColumnName="msg" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+                <ScalarProperty Name="isRead" ColumnName="isRead" />
+                <ScalarProperty Name="notifType" ColumnName="notifType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RegularTransactions">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.RegularTransaction">
+              <MappingFragment StoreEntitySet="RegularTransactions">
+                <ScalarProperty Name="regularTransactionID" ColumnName="regularTransactionID" />
+                <ScalarProperty Name="fromUserID" ColumnName="fromUserID" />
+                <ScalarProperty Name="toVendorID" ColumnName="toVendorID" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="txTimeStamp" ColumnName="txTimeStamp" />
+                <ScalarProperty Name="paymentMode" ColumnName="paymentMode" />
+                <ScalarProperty Name="txStatusID" ColumnName="txStatusID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TopUpSources">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.TopUpSource">
+              <MappingFragment StoreEntitySet="TopUpSources">
+                <ScalarProperty Name="sourceID" ColumnName="sourceID" />
+                <ScalarProperty Name="sourceName" ColumnName="sourceName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TopUpTransactions">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.TopUpTransaction">
+              <MappingFragment StoreEntitySet="TopUpTransactions">
+                <ScalarProperty Name="topUpTransactionID" ColumnName="topUpTransactionID" />
+                <ScalarProperty Name="sourceID" ColumnName="sourceID" />
+                <ScalarProperty Name="toUserID" ColumnName="toUserID" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="txTimeStamp" ColumnName="txTimeStamp" />
+                <ScalarProperty Name="txStatusID" ColumnName="txStatusID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TransactionStatuses">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.TransactionStatus">
+              <MappingFragment StoreEntitySet="TransactionStatuses">
+                <ScalarProperty Name="statusID" ColumnName="statusID" />
+                <ScalarProperty Name="statusName" ColumnName="statusName" />
+                <ScalarProperty Name="statusDescription" ColumnName="statusDescription" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserAccounts">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.UserAccount">
+              <MappingFragment StoreEntitySet="UserAccounts">
+                <ScalarProperty Name="userID" ColumnName="userID" />
+                <ScalarProperty Name="userBalance" ColumnName="userBalance" />
+                <ScalarProperty Name="lastUpdateTime" ColumnName="lastUpdateTime" />
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="userID" ColumnName="userID" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="phone" ColumnName="phone" />
+                <ScalarProperty Name="fullName" ColumnName="fullName" />
+                <ScalarProperty Name="passwordHash" ColumnName="passwordHash" />
+                <ScalarProperty Name="userType" ColumnName="userType" />
+                <ScalarProperty Name="dateCreated" ColumnName="dateCreated" />
+                <ScalarProperty Name="isDeleted" ColumnName="isDeleted" />
+                <ScalarProperty Name="deletedAt" ColumnName="deletedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserToUserTransactions">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.UserToUserTransaction">
+              <MappingFragment StoreEntitySet="UserToUserTransactions">
+                <ScalarProperty Name="UToUTransactionID" ColumnName="UToUTransactionID" />
+                <ScalarProperty Name="toUserID" ColumnName="toUserID" />
+                <ScalarProperty Name="fromUserID" ColumnName="fromUserID" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="txTimeStamp" ColumnName="txTimeStamp" />
+                <ScalarProperty Name="txStatusID" ColumnName="txStatusID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VendorPaymentTransactions">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.VendorPaymentTransaction">
+              <MappingFragment StoreEntitySet="VendorPaymentTransaction">
+                <ScalarProperty Name="vendorPaymentTransactionID" ColumnName="vendorPaymentTransactionID" />
+                <ScalarProperty Name="toVendorID" ColumnName="toVendorID" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="txTimeStamp" ColumnName="txTimeStamp" />
+                <ScalarProperty Name="txStatusID" ColumnName="txStatusID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Vendors">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.Vendor">
+              <MappingFragment StoreEntitySet="Vendors">
+                <ScalarProperty Name="vendorID" ColumnName="vendorID" />
+                <ScalarProperty Name="vendorName" ColumnName="vendorName" />
+                <ScalarProperty Name="vendorBalance" ColumnName="vendorBalance" />
+                <ScalarProperty Name="lastUpdateTime" ColumnName="lastUpdateTime" />
+                <ScalarProperty Name="managerName" ColumnName="managerName" />
+                <ScalarProperty Name="managerPhone" ColumnName="managerPhone" />
+                <ScalarProperty Name="statusID" ColumnName="statusID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VendorStatuses">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.VendorStatus">
+              <MappingFragment StoreEntitySet="VendorStatuses">
+                <ScalarProperty Name="statusID" ColumnName="statusID" />
+                <ScalarProperty Name="statusName" ColumnName="statusName" />
+                <ScalarProperty Name="tillWhen" ColumnName="tillWhen" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CheckBalances">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.CheckBalance">
+              <MappingFragment StoreEntitySet="CheckBalance">
+                <ScalarProperty Name="userID" ColumnName="userID" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="balance" ColumnName="balance" />
+                <ScalarProperty Name="lastUpdateTime" ColumnName="lastUpdateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VendorStatus">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.VendorStatu">
+              <MappingFragment StoreEntitySet="VendorStatus">
+                <ScalarProperty Name="vendorID" ColumnName="vendorID" />
+                <ScalarProperty Name="vendorName" ColumnName="vendorName" />
+                <ScalarProperty Name="vendorBalance" ColumnName="vendorBalance" />
+                <ScalarProperty Name="CurrentStatus" ColumnName="CurrentStatus" />
+                <ScalarProperty Name="managerName" ColumnName="managerName" />
+                <ScalarProperty Name="managerPhone" ColumnName="managerPhone" />
+                <ScalarProperty Name="lastUpdateTime" ColumnName="lastUpdateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_UserMonthlyStats">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.vw_UserMonthlyStats">
+              <MappingFragment StoreEntitySet="vw_UserMonthlyStats">
+                <ScalarProperty Name="userFullName" ColumnName="userFullName" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="TransactionMonth" ColumnName="TransactionMonth" />
+                <ScalarProperty Name="TotalSpent" ColumnName="TotalSpent" />
+                <ScalarProperty Name="AvgTransactionSize" ColumnName="AvgTransactionSize" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_VendorPerformanceRankings">
+            <EntityTypeMapping TypeName="AKPay.DAL.Models.vw_VendorPerformanceRankings">
+              <MappingFragment StoreEntitySet="vw_VendorPerformanceRankings">
+                <ScalarProperty Name="vendorName" ColumnName="vendorName" />
+                <ScalarProperty Name="TotalTransactions" ColumnName="TotalTransactions" />
+                <ScalarProperty Name="TotalRevenue" ColumnName="TotalRevenue" />
+                <ScalarProperty Name="RankPosition" ColumnName="RankPosition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
