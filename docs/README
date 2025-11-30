@@ -1,9 +1,17 @@
-Pull from repo and run script 001 AND 002 to get schema locally.
+Note for viewers:
+    We understand the repo is messy right now, it's our first team project (in fact, first course project basically), please understand too.
+
+A financial transaction model for LUMS (or any institution) that allows for faster transactions at registered vendors by using a localized approach and utilizing the specific LUMS ID as the account ID for everyone (student or not) at LUMS.
+USPs:
+    - Introduces a brand new Rewards Program for regular customers of places like PDC.
+    - Visualizes spending data for every user and revenue data for every vendor to help users plan and budget better while supporting vendors to keep tabs on their sales and finances better as well
+    - Plans to develop a "takeaway-orders" system
 
 
-When pushing your work, make directory with your name then:
-It should have files named like:
-    yourname_sprocs.sql (should contain sprocs you implemented)
-Push the directory ONLY, don't push the files you pulled from here if you changed them
+For Team:
+    Pull from repo whenever starting work
+    When pushing your work, mark with your name and avoid changing other peoples files, if you want to change someone elses files, try reaching out to them or at least inform everyone of changes you make. Push your global edits ONLY, don't push the files you pulled from here if you changed them for some debugging locally!!!
 
-Goodnight (7AM btw)
+
+
+Goodnight

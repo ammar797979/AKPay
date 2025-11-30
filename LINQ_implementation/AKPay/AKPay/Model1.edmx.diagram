@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="65101492edbc4c0585b030edab2d980e" Name="Diagram1" ZoomLevel="80">
+        <EntityTypeShape EntityType="AKPay.DAL.Models.Notification" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.RegularTransaction" Width="1.5" PointX="3" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.TopUpSource" Width="1.5" PointX="3.75" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.TopUpTransaction" Width="1.5" PointX="6" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.TransactionStatus" Width="1.5" PointX="0.75" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.UserAccount" Width="1.5" PointX="3" PointY="14" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.User" Width="1.5" PointX="0.75" PointY="6" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.UserToUserTransaction" Width="1.5" PointX="3.375" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.VendorPaymentTransaction" Width="1.5" PointX="6" PointY="10.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.Vendor" Width="1.5" PointX="0.75" PointY="11.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.VendorStatus" Width="1.5" PointX="1.5" PointY="16.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.CheckBalance" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.VendorStatu" Width="1.5" PointX="8.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.vw_UserMonthlyStats" Width="1.5" PointX="8.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AKPay.DAL.Models.vw_VendorPerformanceRankings" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_RegTx_TxStatuses" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_RegTx_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_RegTx_Vendors" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_TopUpTx_TopUpSources" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_TopUpTx_TxStatuses" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_TopUpTx_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_U2UTx_TxStatuses" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_VendorPayTx_TxStatuses" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_UserAccounts_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_U2UTx_Users_FROM" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_U2UTx_Users_TO" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_VendorPayTx_Vendors" ManuallyRouted="false" />
+        <AssociationConnector Association="AKPay.DAL.Models.FK_Vendors_VendorStatuses" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
