@@ -157,3 +157,33 @@ BEGIN
     END
 END
 GO
+
+CREATE TRIGGER TR_UserBeneficiaries_nickName
+ON UserBeneficiaries
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO UserBeneficiaries(
+        remitterID,
+        beneficiaryID,
+        nickName,
+        lastPaymentTime,
+        lastPaymentAmount,
+        addedAt
+    )
+    SELECT
+        i.remitterID,
+        i.beneficiaryID,
+        COALESCE(i.nickName, u.fullName),
+        i.lastPaymentTime,
+        i.lastPaymentAmount,
+        COALESCE(i.addedAt, GETDATE())
+    FROM
+        inserted i
+    INNER JOIN
+        Users u ON u.userID = i.beneficiaryID;
+
+END;
+GO

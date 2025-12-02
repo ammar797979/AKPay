@@ -38,6 +38,10 @@ CREATE TABLE Users(
     dateCreated DATETIME NOT NULL DEFAULT GETDATE(),
     isDeleted BIT NOT NULL DEFAULT 0,
     deletedAt DATETIME NULL,
+    userName AS -- TODO: Add an index on this for faster beneficiary search
+    (
+        LEFT(Email, CHARINDEX('@lums.edu.pk', Email) - 1)
+    )
     PRIMARY KEY (userID),
     CONSTRAINT CK_Users_email_LUMS
         CHECK (email LIKE '%@lums.edu.pk' AND email NOT LIKE '% %'),
@@ -187,7 +191,7 @@ CREATE TABLE Notifications(
     notificationID INT IDENTITY(1,1),
     recipientType VARCHAR(10) NOT NULL,  -- ONLY 2 possibilities, user or vendor
     recipientID INT NOT NULL,
-    txType VARCHAR(20) NOT NULL,
+    txType VARCHAR(20) NULL, -- If notifType is not 'Info', txType must not be NULL (enforce in backend)
     txID INT NULL, -- If notifType is not 'Info', txID must not be NULL (enforce in backend)
     msg VARCHAR(255) NOT NULL,
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
@@ -202,6 +206,26 @@ CREATE TABLE Notifications(
     CONSTRAINT CK_Notifs_IsRead
         CHECK (isRead IN (0, 1)),
     CONSTRAINT CK_Notifs_TxType
-        CHECK (TxType IN ('Regular', 'U2U', 'TopUp', 'VendorPay'))
+        CHECK (txType IN ('Regular', 'U2U', 'TopUp', 'VendorPay'))
 )ON ps_TransactionDate(createdAt);
+GO
+
+CREATE TABLE UserBeneficiaries(
+    remitterID INT NOT NULL,
+    beneficiaryID INT NOT NULL,
+    nickName VARCHAR(100) NULL,
+    lastPaymentTime DATETIME NULL,
+    lastPaymentAmount DECIMAL(12,2) DEFAULT 0,
+    addedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT PK_UserBeneficiary
+        PRIMARY KEY (userID, beneficiaryID),
+    CONSTRAINT FK_UserBenef_Users_Remitter
+        FOREIGN KEY (remitterID) REFERENCES Users(userID),
+    CONSTRAINT FK_UserBenef_Users_Beneficiary
+        FOREIGN KEY (beneficiaryID) REFERENCES Users(userID),
+    CONSTRAINT CK_UserBenef_Remit_NotEqualTo_Benef
+        CHECK (remitterID <> beneficiaryID),
+    CONSTRAINT CK_UserBenef_LastAmount_Positive
+        CHECK (lastPaymentAmount >= 0)
+)
 GO

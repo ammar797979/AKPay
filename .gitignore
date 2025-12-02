@@ -16,3 +16,5 @@ obj/
 Thumbs.db
 
 testing.sql
+personal*
+.gitignore
